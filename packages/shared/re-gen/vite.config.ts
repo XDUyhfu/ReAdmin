@@ -27,8 +27,8 @@ export default defineConfig({
     build: {
         lib: {
             entry: path.resolve(__dirname, 'src/index.ts'),
-            name: 'ReUtils',
-            fileName: 're-utils'
+            name: 'ReGen',
+            fileName: 're-gen'
         }
     }
 });

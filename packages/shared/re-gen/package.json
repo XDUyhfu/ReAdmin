@@ -1,0 +1,36 @@
+{
+  "name": "@yhfu/re-gen",
+  "private": false,
+  "version": "0.3.5",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc && vite build"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "./dist"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "url": "https://github.com/XDUyhfu/ReAdmin"
+  },
+  "author": {
+    "name": "yhfu",
+    "email": "yhfu@stu.xidian.edu.cn"
+  },
+  "keywords": [
+    "rxjs",
+    "relationship",
+    "state"
+  ]
+}

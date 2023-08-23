@@ -15,6 +15,7 @@ export default defineConfig(({ command }) => ({
     plugins: [
         react(),
         replace({
+            preventAssignment: true,
             'process.env.NODE_ENV': JSON.stringify(
                 command === 'build' ? 'production' : 'development'
             )

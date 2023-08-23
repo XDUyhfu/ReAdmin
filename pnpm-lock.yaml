@@ -38,6 +38,9 @@ importers:
       rxjs-hooks:
         specifier: 0.8.0-alpha.0
         version: 0.8.0-alpha.0(react@18.2.0)(rxjs@7.8.0)
+      rxjs-watcher:
+        specifier: ^1.2.2
+        version: 1.2.2
     devDependencies:
       '@commitlint/cli':
         specifier: ^17.6.1
@@ -166,6 +169,8 @@ importers:
   packages/components/re-form-filter: {}
 
   packages/projects/re-backend: {}
+
+  packages/shared/re-gen: {}
 
   packages/shared/re-hooks:
     dependencies:
@@ -6664,6 +6669,12 @@ packages:
       tslib: 2.6.2
       use-constant: 1.1.1(react@18.2.0)
       use-sync-external-store: 1.2.0(react@18.2.0)
+    dev: false
+
+  /rxjs-watcher@1.2.2:
+    resolution: {integrity: sha512-iHoMvLWFx0sWNhRqhxfzHtEkKe35BB4f2Zq5nHRy5QppvvW4G6FWfOjfMXgsGfRBZKa3b7uX5xzLUH6gfAGbqA==}
+    dependencies:
+      rxjs: 7.8.0
     dev: false
 
   /rxjs@7.8.0:

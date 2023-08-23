@@ -20,7 +20,8 @@
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.14.2",
     "rxjs": "^7.8.0",
-    "rxjs-hooks": "0.8.0-alpha.0"
+    "rxjs-hooks": "0.8.0-alpha.0",
+    "rxjs-watcher": "^1.2.2"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.6.1",
