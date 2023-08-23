@@ -6,5 +6,6 @@ coverage
 dist/
 lib/
 es/
+public/
 node_modules/
 .eslintrc.cjs

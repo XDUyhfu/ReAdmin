@@ -3,4 +3,5 @@ build/
 es/
 dist/
 node_modules/
+public/
 *.yaml
