@@ -1,0 +1,2 @@
+- eslint-config-prettier 用于覆盖 ESLint 本身的规则配置
+- eslint-plugin-prettier 用于让 Prettier 来接管 eslint --fix 即修复代码的能力

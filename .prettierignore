@@ -1,0 +1,6 @@
+lib/
+build/
+es/
+dist/
+node_modules/
+*.yaml

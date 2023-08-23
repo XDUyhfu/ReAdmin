@@ -1,0 +1,5 @@
+build_*/
+output*/
+coverage/
+node_modules/
+dist/
