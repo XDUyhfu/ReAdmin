@@ -4,10 +4,14 @@ import replace from '@rollup/plugin-replace';
 import dts from 'vite-plugin-dts';
 import stylelint from 'vite-plugin-stylelint';
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
-import tailwindcss from 'tailwindcss';
 import autoprefixer from 'autoprefixer';
-import path from 'path';
-import { alias } from '../../../vite.common.config.ts';
+import {
+    alias,
+    getLib,
+    rollupOptions,
+    server,
+    tailwind
+} from '../../../vite.common.config.ts';
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import eslint from 'vite-plugin-eslint';
@@ -33,35 +37,14 @@ export default defineConfig(({ command }) => ({
         })
     ],
     resolve: { alias },
-    server: {
-        open: true,
-        host: '0.0.0.0'
-    },
+    server,
     css: {
         postcss: {
-            plugins: [
-                tailwindcss({
-                    config: '../../../tailwind.config.js'
-                }),
-                autoprefixer
-            ]
+            plugins: [tailwind, autoprefixer]
         }
     },
     build: {
-        lib: {
-            entry: path.resolve(__dirname, './src/index.ts'),
-            name: 'ReFormFilter',
-            fileName: 're-form-filter'
-        },
-        rollupOptions: {
-            external: ['react', 'react-dom', 'antd'],
-            output: {
-                globals: {
-                    react: 'React',
-                    'react-dom': 'ReactDOM',
-                    antd: 'antd'
-                }
-            }
-        }
+        lib: getLib('ReFormFilter', 're-form-filter'),
+        rollupOptions
     }
 }));
