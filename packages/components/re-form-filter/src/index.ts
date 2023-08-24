@@ -1,1 +1,1 @@
-export { FormFilter } from '@/component/form-filter.tsx';
+export { FormFilter } from '@re-form-filter/component/form-filter.tsx';

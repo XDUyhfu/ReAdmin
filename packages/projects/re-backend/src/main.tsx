@@ -1,12 +1,12 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
-import { routes } from '@/routes';
+import { routes } from '@re-backend/routes';
 import './index.scss';
 import 'modern-normalize';
-import type { ReRoute } from '@/routes/interface';
-import App from '@/App.tsx';
-import { normalizeRoutePath } from '@/utils';
+import type { ReRoute } from '@re-backend/routes/interface';
+import App from '@re-backend/App.tsx';
+import { normalizeRoutePath } from '@re-backend/utils';
 
 const defaultRootRoute: ReRoute = {
     path: '/',

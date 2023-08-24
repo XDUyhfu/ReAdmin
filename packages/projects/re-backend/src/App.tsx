@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Layout, Menu } from 'antd';
 import tsIcon from '/typescript.svg';
-import { routes } from '@/routes';
+import { routes } from '@re-backend/routes';
 import { Outlet } from 'react-router-dom';
-import { useRoutes } from '@/hooks';
+import { useRoutes } from '@re-backend/hooks';
 
 const { Header, Content, Sider, Footer } = Layout;
 

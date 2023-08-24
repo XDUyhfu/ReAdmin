@@ -1,2 +1,2 @@
-export { WorkerPool } from './webworker-pool';
-export { RequestTimer } from './requestTimer';
+export { WorkerPool } from '@re-utils/webworker-pool';
+export { Timer } from '@re-utils/timer';

@@ -1,6 +1,6 @@
 import { Avatar, Card, Col, Descriptions, Row, Skeleton } from 'antd';
 import type { DescriptionsProps } from 'antd';
-import { useDelay } from '@/hooks';
+import { useDelay } from '@re-backend/hooks';
 
 const items: DescriptionsProps['items'] = [
     {

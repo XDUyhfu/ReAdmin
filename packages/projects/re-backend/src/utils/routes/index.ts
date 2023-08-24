@@ -1,4 +1,4 @@
-import type { ReRoute } from '@/routes/interface';
+import type { ReRoute } from '@re-backend/routes/interface';
 
 /**
  * 删除字符串中开头的Slash /

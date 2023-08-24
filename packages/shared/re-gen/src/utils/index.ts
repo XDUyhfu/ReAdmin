@@ -9,7 +9,7 @@ import type {
     PluckValueType,
     PlainResult,
     IRelationConfig
-} from '@/type';
+} from '@re-gen/type';
 import {
     DistinctDefaultValue,
     LoggerDurationDefaultValue,
@@ -41,7 +41,8 @@ export const isPlainResult = (result: ReturnResult): result is PlainResult =>
 const isNotObservable = (value: any) =>
     isPlainResult(value) || isObject(value) || isFunction(value);
 
-export const getDependNames = (item: IConfigItem) => item.depend?.names || [];
+export const getDependNames = (item: IConfigItem) =>
+    item.depend?.names || ([] as string[]);
 export const defaultReduceFunction = (_: any, val: any) => val;
 
 /**
@@ -102,8 +103,10 @@ export const OpenLogger = (CacheKey: string, config?: ReGenConfig) => {
 
 export const PluckValue = (config: IConfigItem[]): PluckValueType[] =>
     config.map((item) => ({ init: item?.init, name: item?.name }));
+
 export const PluckName = (config: IConfigItem[]): string[] =>
     config.map((item) => item.name);
+
 const isNotEmpty = complement(isEmpty);
 
 const JudgeRepetition = (RelationConfig: IConfigItem[]) =>

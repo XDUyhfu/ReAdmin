@@ -1,5 +1,5 @@
-import { InfoPanel } from '@/pages/user/setting/InfoPanel.tsx';
-import { SettingPanel } from '@/pages/user/setting/SettingPanel.tsx';
+import { InfoPanel } from '@re-backend/pages/user/setting/InfoPanel.tsx';
+import { SettingPanel } from '@re-backend/pages/user/setting/SettingPanel.tsx';
 import { Space } from 'antd';
 
 export const Setting = () => {

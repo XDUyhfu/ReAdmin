@@ -1,5 +1,5 @@
-import type { ReRoute } from '@/routes/interface';
-import { Info, Setting } from '@/pages/user';
+import type { ReRoute } from '@re-backend/routes/interface';
+import { Info, Setting } from '@re-backend/pages/user';
 
 export const routes: ReRoute[] = [
     {

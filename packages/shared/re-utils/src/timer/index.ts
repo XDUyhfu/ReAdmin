@@ -1,7 +1,7 @@
 import type { Subscription } from 'rxjs';
 import { concatMap, of, expand, timer } from 'rxjs';
 
-export class RequestTimer {
+export class Timer {
     timerRequest: Subscription;
 
     constructor(second: number, callback: (...args: any[]) => void) {

@@ -1,7 +1,7 @@
-import type { ReRoute } from '@/routes/interface';
+import type { ReRoute } from '@re-backend/routes/interface';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useRef, useState } from 'react';
-import { removeStartSlash } from '@/utils';
+import { removeStartSlash } from '@re-backend/utils';
 
 const MaxMenuDeep = 3;
 
