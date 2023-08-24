@@ -15,7 +15,7 @@ export default defineConfig(({ command }) => ({
     server,
     css: {
         postcss: {
-            plugins: [tw, autoprefixer]
+            plugins: [tw(), autoprefixer]
         }
     },
     build: {

@@ -3,12 +3,12 @@ import tailwindcss from 'tailwindcss';
 import react from '@vitejs/plugin-react';
 import stylelint from 'vite-plugin-stylelint';
 import legacy from '@vitejs/plugin-legacy';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import eslint from 'vite-plugin-eslint';
 import replace from '@rollup/plugin-replace';
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 import dts from 'vite-plugin-dts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import eslint from 'vite-plugin-eslint';
 
 const ConfigPathMap = {
     alias: {
@@ -82,9 +82,10 @@ export const server = {
     host: '0.0.0.0'
 };
 
-export const tw = tailwindcss({
-    config: path.resolve(__dirname, './tailwind.config.js')
-});
+export const tw = () =>
+    tailwindcss({
+        config: path.resolve(__dirname, './tailwind.config.js')
+    });
 
 export const projectPlugin = () => [
     react(),
