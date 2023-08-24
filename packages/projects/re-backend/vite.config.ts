@@ -2,6 +2,7 @@ import { defineConfig } from 'vite';
 import autoprefixer from 'autoprefixer';
 import {
     alias,
+    DOMTest,
     projectPlugin,
     server,
     tw
@@ -17,5 +18,6 @@ export default defineConfig({
         postcss: {
             plugins: [tw(), autoprefixer]
         }
-    }
+    },
+    test: DOMTest
 });

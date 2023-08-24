@@ -15,13 +15,11 @@
     "noEmit": true,
     "jsx": "react-jsx",
 
-
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true
-
   },
-  "include": ["**/src", "**/vite.config.ts"]
+  "include": ["**/src", "**/vite.config.ts", "jest.config.js", "global.d.ts"]
 }

@@ -6,7 +6,8 @@ import {
     getLib,
     rollupOptions,
     server,
-    tw
+    tw,
+    DOMTest
 } from '../../../vite.common.config.ts';
 
 export default defineConfig(({ command }) => ({
@@ -21,5 +22,6 @@ export default defineConfig(({ command }) => ({
     build: {
         lib: getLib('ReFormFilter', 're-form-filter'),
         rollupOptions
-    }
+    },
+    test: DOMTest
 }));

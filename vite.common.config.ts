@@ -132,3 +132,13 @@ export const libPlugin = (command: 'build' | 'serve') => [
         rollupTypes: true
     })
 ];
+
+export const DOMTest = {
+    globals: true,
+    environment: 'jsdom'
+};
+
+export const NodeTest = {
+    globals: true,
+    environment: 'node'
+};

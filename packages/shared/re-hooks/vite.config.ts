@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite';
 import {
     alias,
+    DOMTest,
     getLib,
     libPlugin,
     rollupOptions
@@ -14,5 +15,6 @@ export default defineConfig(({ command }) => ({
     build: {
         lib: getLib('ReUtils', 're-utils'),
         rollupOptions
-    }
+    },
+    test: DOMTest
 }));

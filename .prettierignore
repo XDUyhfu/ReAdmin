@@ -3,5 +3,6 @@ build/
 es/
 dist/
 node_modules/
+coverage/
 public/
 *.yaml

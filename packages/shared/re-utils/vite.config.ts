@@ -1,5 +1,10 @@
 import { defineConfig } from 'vite';
-import { alias, getLib, libPlugin } from '../../../vite.common.config.ts';
+import {
+    alias,
+    getLib,
+    libPlugin,
+    NodeTest
+} from '../../../vite.common.config.ts';
 
 export default defineConfig(({ command }) => ({
     plugins: [libPlugin(command)],
@@ -8,5 +13,6 @@ export default defineConfig(({ command }) => ({
     },
     build: {
         lib: getLib('ReUtils', 're-utils')
-    }
+    },
+    test: NodeTest
 }));
