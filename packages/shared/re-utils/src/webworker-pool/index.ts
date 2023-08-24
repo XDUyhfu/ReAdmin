@@ -10,7 +10,7 @@ import {
     EMPTY
 } from 'rxjs';
 
-export class WorkerPool<Task = any, Message = any> {
+export class WebWorkerPool<Task = any, Message = any> {
     private subject = new ReplaySubject<Task>(0, 0);
     private observables: Observable<Message>[] = [];
     private postMessage$: Observable<[Task, Worker]> = EMPTY;

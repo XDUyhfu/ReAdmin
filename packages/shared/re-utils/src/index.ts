@@ -1,2 +1,2 @@
-export { WorkerPool } from '@re-utils/webworker-pool';
+export { WebWorkerPool } from '@re-utils/webworker-pool';
 export { Timer } from '@re-utils/timer';

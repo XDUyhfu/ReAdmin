@@ -3,6 +3,7 @@
     "paths": {
       "@re-gen/*": ["./packages/shared/re-gen/src/*"],
       "@re-utils/*": ["./packages/shared/re-utils/src/*"],
+      "@re-hooks/*": ["./packages/shared/re-hooks/src/*"],
       "@re-backend/*": ["./packages/projects/re-backend/src/*"],
       "@re-form-filter/*": ["./packages/components/re-form-filter/src/*"]
     }

@@ -1,10 +1,11 @@
 import { defineConfig } from 'vite';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import eslint from 'vite-plugin-eslint';
 import replace from '@rollup/plugin-replace';
 import dts from 'vite-plugin-dts';
 import path from 'path';
+import { alias } from '../../../vite.common.config.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import eslint from 'vite-plugin-eslint';
 
 export default defineConfig({
     plugins: [
@@ -19,9 +20,7 @@ export default defineConfig({
         })
     ],
     resolve: {
-        alias: {
-            '@': path.resolve(__dirname, 'src')
-        }
+        alias
     },
 
     build: {

@@ -1,6 +1,6 @@
 import { Avatar, Card, Col, Descriptions, Row, Skeleton } from 'antd';
 import type { DescriptionsProps } from 'antd';
-import { useDelay } from '@re-backend/hooks';
+import { useDelay } from '@re-hooks/index';
 
 const items: DescriptionsProps['items'] = [
     {
@@ -31,7 +31,7 @@ const items: DescriptionsProps['items'] = [
 ];
 
 export const InfoPanel = () => {
-    const delayResult = useDelay();
+    const delayResult = useDelay(1000);
 
     return (
         <Card>

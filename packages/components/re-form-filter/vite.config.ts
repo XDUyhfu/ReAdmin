@@ -1,8 +1,5 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-ignore
-import eslint from 'vite-plugin-eslint';
 import replace from '@rollup/plugin-replace';
 import dts from 'vite-plugin-dts';
 import stylelint from 'vite-plugin-stylelint';
@@ -10,6 +7,10 @@ import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 import tailwindcss from 'tailwindcss';
 import autoprefixer from 'autoprefixer';
 import path from 'path';
+import { alias } from '../../../vite.common.config.ts';
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-ignore
+import eslint from 'vite-plugin-eslint';
 
 export default defineConfig(({ command }) => ({
     plugins: [
@@ -31,11 +32,7 @@ export default defineConfig(({ command }) => ({
             rollupTypes: true
         })
     ],
-    resolve: {
-        alias: {
-            '@': path.resolve(__dirname, 'src')
-        }
-    },
+    resolve: { alias },
     server: {
         open: true,
         host: '0.0.0.0'
