@@ -1,37 +1,32 @@
-import {
-    identity,
-    of,
-    map,
-    switchMap,
-    scan,
-    filter,
-    BehaviorSubject
-} from 'rxjs';
+import { BehaviorSubject, filter, map, of, scan } from 'rxjs';
 import { AtomInOut, AtomState, getOutObservable } from './Atom';
 import {
-    defaultReduceFunction,
-    getDependNames,
-    transformResultToObservable,
-    transformDistinctOptionToBoolean,
-    OpenLogger,
     CheckParams,
-    isJointAtom,
+    defaultReduceFunction,
     flatRelationConfig,
+    getDependNames,
+    isInit,
+    isJointAtom,
     isValidRelationConfig,
-    isInit
+    OpenLogger,
+    transformDistinctOptionToBoolean
 } from './utils';
-import type { IConfigItem } from './type';
+import type {
+    IAtomInOut,
+    IConfigItem,
+    IRelationConfig,
+    ReGenConfig
+} from './type';
 import { forEach } from 'ramda';
-import type { IAtomInOut, IRelationConfig, ReGenConfig } from './type';
 
-import { CombineType, FilterNilStage, DefaultValue } from './config';
+import { CombineType, DefaultValue, FilterNilStage } from './config';
 import {
     handleCombine,
     handleDependValueChange,
     handleDistinct,
     handleError,
     handleLogger,
-    handleUndefinedWithStage,
+    handleTransformValue,
     WithTimeout
 } from './operator';
 import { Global, InitGlobalValue } from './store';
@@ -85,23 +80,13 @@ const AtomHandle =
     (RelationConfig: IConfigItem[]) =>
         forEach((item: IConfigItem) => {
             const atom = Global.Store.get(CacheKey)!.get(item.name)!;
-            const handleUndefined = handleUndefinedWithStage(item, config);
+            const transformValue = handleTransformValue(item, config);
             atom.in$
                 .pipe(
                     filter((item) => !isJointAtom(item)),
-                    switchMap(transformResultToObservable),
-                    handleUndefined(FilterNilStage.InBefore),
-                    map(item?.interceptor?.before || identity),
-                    handleError(
-                        `捕获到 ${item.name} item.interceptor.before 中报错`
-                    ),
-                    switchMap(transformResultToObservable),
-                    handleUndefined(FilterNilStage.In),
-                    switchMap(transformResultToObservable),
-                    map(item.handle || identity),
-                    switchMap(transformResultToObservable),
-                    handleUndefined(FilterNilStage.HandleAfter),
-                    handleError(`捕获到 ${item.name} handle 中报错`)
+                    transformValue(FilterNilStage.InBefore),
+                    transformValue(FilterNilStage.In),
+                    transformValue(FilterNilStage.HandleAfter)
                 )
                 .subscribe(atom.mid$);
         })(RelationConfig);
@@ -118,39 +103,26 @@ const HandleDepend =
         forEach((item: IConfigItem) => {
             const atom = Global.Store.get(CacheKey)!.get(item.name)!;
             const dependNames = getDependNames(item);
-            const handleUndefined = handleUndefinedWithStage(item, config);
             const dependAtomsOut$ = dependNames.map(
                 (name) => Global.Store.get(CacheKey)!.get(name)!.out$
             );
+            const transformValue = handleTransformValue(item, config);
 
             atom.mid$
                 .pipe(
-                    switchMap(transformResultToObservable),
-                    handleUndefined(FilterNilStage.DependBefore),
+                    transformValue(FilterNilStage.DependBefore),
                     handleCombine(
                         item.depend?.combineType || CombineType.ANY_CHANGE,
                         dependAtomsOut$
                     ),
                     handleDependValueChange(CacheKey, item, dependNames),
-                    map(
-                        // 这里的类型不正确 在有 depend 的时候是一个tuple，没有的时候是 any
-                        (value: [any, Record<string, boolean>, [any, any]]) =>
-                            // current isChange beforeAndCurrent
-                            item?.depend?.handle?.(...value) ?? identity(value)
-                    ),
-                    handleError(`捕获到 ${item.name} depend.handle 中报错`),
-                    switchMap(transformResultToObservable),
-                    handleUndefined(FilterNilStage.DependAfter),
+                    transformValue(FilterNilStage.DependAfter),
                     scan(
                         item?.reduce?.handle || defaultReduceFunction,
                         item.reduce?.init
                     ),
-                    switchMap(transformResultToObservable),
-                    handleError(`捕获到 ${item.name} reduce 中报错`),
-                    handleUndefined(FilterNilStage.Out),
-                    map(item?.interceptor?.after || identity),
-                    switchMap(transformResultToObservable),
-                    handleUndefined(FilterNilStage.OutAfter),
+                    transformValue(FilterNilStage.Out),
+                    transformValue(FilterNilStage.OutAfter),
                     WithTimeout(item.withTimestamp ?? config?.withTimestamp),
                     handleDistinct(
                         transformDistinctOptionToBoolean(

@@ -10,15 +10,19 @@ import {
     identity,
     map,
     ReplaySubject,
+    switchMap,
     tap,
     timestamp,
     withLatestFrom,
     zipWith
 } from 'rxjs';
 import { compose, equals, is, isNil, not } from 'ramda';
-import type { FilterNilStage } from './config';
+import { FilterNilStage } from './config';
 import { CombineType } from './config';
-import { transformFilterNilOptionToBoolean } from './utils';
+import {
+    transformFilterNilOptionToBoolean,
+    transformResultToObservable
+} from './utils';
 import { Global } from './store';
 import type { OperatorReturnType } from './type';
 
@@ -158,3 +162,47 @@ export const WithTimeout =
     (withTimestamp?: boolean): OperatorReturnType =>
     (source) =>
         withTimestamp ? source.pipe(timestamp()) : source;
+
+const getProjectWithStage = (item: IConfigItem, stage: FilterNilStage) =>
+    ({
+        [FilterNilStage.InBefore]: identity,
+        [FilterNilStage.In]: item?.interceptor?.before || identity,
+        [FilterNilStage.HandleAfter]: item.handle || identity,
+        [FilterNilStage.DependBefore]: identity,
+        [FilterNilStage.DependAfter]: (
+            value: [any, Record<string, boolean>, [any, any]]
+        ) =>
+            // current isChange beforeAndCurrent
+            item?.depend?.handle?.(...value) ?? identity(value),
+        [FilterNilStage.OutAfter]: item?.interceptor?.after || identity,
+        [FilterNilStage.Out]: identity,
+        [FilterNilStage.All]: identity,
+        [FilterNilStage.Default]: identity
+    }[stage] as (...args: any[]) => any);
+
+const ErrorMessage = (name: string, stage: FilterNilStage) =>
+    ({
+        [FilterNilStage.InBefore]: '',
+        [FilterNilStage.In]: `捕获到 ${name} item.interceptor.before 中报错`,
+        [FilterNilStage.HandleAfter]: `捕获到 ${name} handle 中报错`,
+        [FilterNilStage.DependBefore]: '',
+        [FilterNilStage.DependAfter]: `捕获到 ${name} depend.handle 中报错`,
+        [FilterNilStage.OutAfter]: '',
+        [FilterNilStage.Out]: `捕获到 ${name} reduce 中报错`,
+        [FilterNilStage.All]: '',
+        [FilterNilStage.Default]: ''
+    }[stage]);
+
+export const handleTransformValue =
+    (item: IConfigItem, config?: ReGenConfig) =>
+    (stage: FilterNilStage): OperatorReturnType =>
+    (source) =>
+        getProjectWithStage(item, stage)
+            ? source.pipe(
+                  switchMap(transformResultToObservable),
+                  map(getProjectWithStage(item, stage)),
+                  handleError(ErrorMessage(item.name, stage)),
+                  handleUndefinedWithStage(item, config)(stage),
+                  switchMap(transformResultToObservable)
+              )
+            : source;
