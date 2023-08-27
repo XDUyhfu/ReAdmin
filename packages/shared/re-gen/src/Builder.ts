@@ -31,7 +31,8 @@ import {
     handleDistinct,
     handleError,
     handleLogger,
-    handleUndefinedWithStage
+    handleUndefinedWithStage,
+    WithTimeout
 } from './operator';
 import { Global, InitGlobalValue } from './store';
 
@@ -146,16 +147,17 @@ const HandleDepend =
                     ),
                     switchMap(transformResultToObservable),
                     handleError(`捕获到 ${item.name} reduce 中报错`),
+                    handleUndefined(FilterNilStage.Out),
+                    map(item?.interceptor?.after || identity),
+                    switchMap(transformResultToObservable),
+                    handleUndefined(FilterNilStage.OutAfter),
+                    WithTimeout(item.withTimestamp ?? config?.withTimestamp),
                     handleDistinct(
                         transformDistinctOptionToBoolean(
                             config?.distinct,
                             item.distinct
                         )
                     ),
-                    handleUndefined(FilterNilStage.Out),
-                    map(item?.interceptor?.after || identity),
-                    switchMap(transformResultToObservable),
-                    handleUndefined(FilterNilStage.OutAfter),
                     handleError(
                         `捕获到 ${item.name} item.interceptor.after 中报错`
                     ),

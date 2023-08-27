@@ -1,5 +1,5 @@
 import { useReGen } from '../../../src';
-import { RelationConfig, RelationConfig2 } from './config';
+import { Config, RelationConfig, RelationConfig2 } from './config';
 import { Button, Select } from 'antd';
 
 function App() {
@@ -12,12 +12,17 @@ function App() {
             testMoreDepend,
             showChange,
             ReGenValue: { setValue }
+        },
+        Config: {
+            value,
+            ReGenValue: { setValue: setConfigValue }
         }
     } = useReGen(
         'CACHE_KEY',
         {
             RelationConfig,
-            RelationConfig2
+            RelationConfig2,
+            Config
         },
         { logger: true }
     );
@@ -94,6 +99,16 @@ function App() {
                 onClick={() => setValue('showRegion', Date.now())}>
                 获取最新值
             </Button>
+
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <div>计算值{JSON.stringify(value)}</div>
+            <Button onClick={() => setConfigValue('add', 1)}>+1</Button>
+            <Button onClick={() => setConfigValue('sub', 1)}>-1</Button>
         </div>
     );
 }

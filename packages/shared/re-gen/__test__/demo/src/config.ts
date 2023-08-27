@@ -49,8 +49,7 @@ export const RelationConfig: IConfigItem[] = [
         name: 'showChange',
         depend: {
             names: ['area', 'showRegion'],
-            handle: (_current, isChange, _beforeAndCurrent) => {
-                console.log(isChange);
+            handle: (_current, _isChange, _beforeAndCurrent) => {
                 return {
                     d: Date.now(),
                     c: _current[1]
@@ -153,6 +152,44 @@ export const RelationConfig2: IConfigItem[] = [
             after: (value) =>
                 // console.log("after");
                 `${value}-456`
+        }
+    }
+];
+
+export const Config: IConfigItem[] = [
+    {
+        name: 'value',
+        init: 0,
+        depend: {
+            names: ['sub', 'add'],
+            handle([value], isChange) {
+                if (isChange['Config:$$:sub']) {
+                    return -1;
+                } else if (isChange['Config:$$:add']) {
+                    return 1;
+                }
+                return value;
+            }
+        },
+        reduce: {
+            handle: (pre, cur) => {
+                return pre + cur;
+            },
+            init: 0
+        }
+    },
+    {
+        name: 'sub',
+        withTimestamp: true,
+        handle() {
+            return -1;
+        }
+    },
+    {
+        name: 'add',
+        withTimestamp: true,
+        handle() {
+            return 1;
         }
     }
 ];

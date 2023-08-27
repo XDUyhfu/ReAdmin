@@ -45,18 +45,24 @@ export interface IConfigItem {
         combineType?: CombineType;
     };
     reduce?: {
-        handle: (pre: any, val: any) => ReturnResult;
+        handle: (pre: any, cur: any) => ReturnResult;
         init: any;
     };
     distinct?: IDistinct;
-    // 如果正常使用该库的话，应该不会使用到该配置项
-    // 但是在使用该库封装一些组件之类的时候，或许会有很作用
-    // 例如：插入用户的逻辑
+    /**
+     *  如果正常使用该库的话，应该不会使用到该配置项
+     *  但是在使用该库封装一些组件之类的时候，或许会有很作用
+     *  例如：插入用户的逻辑
+     */
     interceptor?: {
         before?: (arg: any) => ReturnResult;
         after?: (arg: any) => ReturnResult;
     };
     filterNil?: FilterNilStage | boolean;
+    /**
+     * 结果是否携带 timestamp 信息，主要用于在两次流经值相同的情况下，用于判断该值是否发生了变化
+     */
+    withTimestamp?: boolean;
 }
 
 export type AtomsType = Record<string, AnyBehaviorSubject>;
@@ -78,15 +84,24 @@ export interface ReGenConfig {
     filterNil?: FilterNilStage | boolean;
     distinct?: boolean;
     init?: Record<string, any>;
+    /**
+     * 结果是否携带 timestamp 信息，主要用于在两次流经值相同的情况下，用于判断该值是否发生了变化
+     */
+    withTimestamp?: boolean;
 }
 
 export type IAtomInOut = (name: string) => {
     [p: `${string}In$`]: BehaviorSubject<any>;
     [p: `${string}Out$`]: BehaviorSubject<any>;
 };
-// 后两种方式一般情况下是不会使用到的，主要当你要将多个 Config 封装到一起的时候，可能会用到这种方式
+
+/**
+ * 后两种方式一般情况下是不会使用到的，主要当你要将多个 Config 封装到一起的时候，可能会用到这种方式
+ */
 export type IRelationConfig =
     | IConfigItem[]
     | IConfigItem[][]
     | Record<string, IConfigItem[]>
     | Record<string, IConfigItem[][]>;
+
+export type OperatorReturnType = (source: Observable<any>) => Observable<any>;

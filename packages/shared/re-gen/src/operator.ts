@@ -11,6 +11,7 @@ import {
     map,
     ReplaySubject,
     tap,
+    timestamp,
     withLatestFrom,
     zipWith
 } from 'rxjs';
@@ -19,16 +20,16 @@ import type { FilterNilStage } from './config';
 import { CombineType } from './config';
 import { transformFilterNilOptionToBoolean } from './utils';
 import { Global } from './store';
+import type { OperatorReturnType } from './type';
 
-const handleUndefined: (
-    filterNil: boolean
-) => (source: Observable<any>) => Observable<any> = (filterNil) => (source) =>
-    filterNil ? source.pipe(filter(compose(not, isNil))) : source;
+const handleUndefined: (filterNil: boolean) => OperatorReturnType =
+    (filterNil) => (source) =>
+        filterNil ? source.pipe(filter(compose(not, isNil))) : source;
 
 export const handleUndefinedWithStage: (
     item: IConfigItem,
     config?: ReGenConfig
-) => (stage: FilterNilStage) => (source: Observable<any>) => Observable<any> =
+) => (stage: FilterNilStage) => OperatorReturnType =
     (item, config) => (stage) => (source) =>
         source.pipe(
             handleUndefined(
@@ -67,10 +68,7 @@ export const handleDistinct =
  * @param depends
  */
 export const handleCombine =
-    (
-        type: CombineType,
-        depends: BehaviorSubject<any>[]
-    ): ((source: Observable<any>) => Observable<any>) =>
+    (type: CombineType, depends: BehaviorSubject<any>[]): OperatorReturnType =>
     (source) =>
         depends.length > 0
             ? type === CombineType.SELF_CHANGE
@@ -85,7 +83,7 @@ const handleCombineWithBuffer =
         CacheKey: string,
         name: string,
         dependNamesWithSelf: string[]
-    ): ((source: Observable<any>) => Observable<any>) =>
+    ): OperatorReturnType =>
     (source) =>
         Global.Buffer.get(CacheKey)!.has(name)
             ? source.pipe(
@@ -101,10 +99,17 @@ const handleCombineWithBuffer =
                       const isChange: Record<string, boolean> = {};
                       dependNamesWithSelf?.forEach((name, index) => {
                           isChange[name] = not(
-                              equals(
-                                  beforeAndCurrent?.[0]?.[index],
-                                  beforeAndCurrent?.[1]?.[index]
-                              )
+                              beforeAndCurrent?.[0]?.[index]?.timestamp
+                                  ? equals(
+                                        beforeAndCurrent?.[0]?.[index]
+                                            ?.timestamp,
+                                        beforeAndCurrent?.[1]?.[index]
+                                            ?.timestamp
+                                    )
+                                  : equals(
+                                        beforeAndCurrent?.[0]?.[index] ?? null,
+                                        beforeAndCurrent?.[1]?.[index] ?? null
+                                    )
                           );
                       });
                       return [current, isChange, beforeAndCurrent];
@@ -133,7 +138,7 @@ export const handleDependValueChange = (
 };
 
 export const handleError =
-    (message: string): ((source: Observable<any>) => Observable<any>) =>
+    (message: string): OperatorReturnType =>
     (source) =>
         source.pipe(
             catchError((e) => {
@@ -146,5 +151,10 @@ export const handleLogger = (
     CacheKey: string,
     name: string,
     open?: { duration?: number } | boolean | number
-): ((source: Observable<any>) => Observable<any>) =>
+): OperatorReturnType =>
     open ? Global.LoggerWatcher.get(CacheKey)!(`${name}`) : identity;
+
+export const WithTimeout =
+    (withTimestamp?: boolean): OperatorReturnType =>
+    (source) =>
+        withTimestamp ? source.pipe(timestamp()) : source;
