@@ -16,6 +16,13 @@ export class AtomState {
     }
 }
 
+/**
+ * 通过判断 RelationConfig 是否有效，返回不同的处理函数
+ * 主要是考虑到配置文件异步加载的情况，可能会导致后续的操作报错的问题
+ * @param CacheKey
+ * @param RelationConfig
+ * @constructor
+ */
 export const AtomInOut = (CacheKey: string, RelationConfig: IConfigItem[]) =>
     isValidRelationConfig(RelationConfig)
         ? <T = any>(name: string) => {

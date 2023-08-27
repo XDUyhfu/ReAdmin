@@ -7,7 +7,7 @@ module.exports = {
     },
     settings: {
         react: {
-            version: "detect"
+            version: 'detect'
         }
     },
     extends: [
@@ -28,8 +28,8 @@ module.exports = {
     rules: {
         // 注意要加上这一句，开启 prettier 自动修复的功能
         'prettier/prettier': 'error',
-        'quotes': ['error', 'single'],
-        'semi': ['error', 'always'],
+        quotes: ['error', 'single'],
+        semi: ['error', 'always'],
         'react/react-in-jsx-scope': 'off',
         '@typescript-eslint/no-explicit-any': 'off',
         '@typescript-eslint/no-empty-function': 'off',
@@ -37,6 +37,6 @@ module.exports = {
         'no-console': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
         'no-debugger': process.env.NODE_ENV === 'production' ? 'warn' : 'off',
         '@typescript-eslint/consistent-type-imports': 'error',
-        '@typescript-eslint/no-non-null-assertion': "off"
+        '@typescript-eslint/no-non-null-assertion': 'off'
     }
 };

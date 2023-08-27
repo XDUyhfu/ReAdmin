@@ -254,5 +254,5 @@ export const flatRelationConfig = (
         : recordToArrayType(CacheKey, RelationConfig);
 
 export const isValidRelationConfig = (RelationConfig: IConfigItem[]) =>
-    RelationConfig.length > 0;
+    RelationConfig?.length > 0;
 export const isInit = (CacheKey: string) => !Global.Store.has(CacheKey);

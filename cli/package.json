@@ -1,0 +1,17 @@
+{
+  "name": "@yhfu/re-cli",
+  "private": true,
+  "version": "0.0.1",
+  "type": "commonjs",
+  "scripts": {
+    "link": "npm link ."
+  },
+  "dependencies": {
+    "commander": "^10.0.0",
+    "download-git-repo": "^3.0.2",
+    "ejs": "^3.1.8"
+  },
+  "bin": {
+    "re-cli": "./src/index.js"
+  }
+}
