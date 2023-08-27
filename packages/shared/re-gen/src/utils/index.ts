@@ -10,14 +10,7 @@ import type {
     PlainResult,
     IRelationConfig
 } from '@re-gen/type';
-import {
-    DistinctDefaultValue,
-    LoggerDurationDefaultValue,
-    FilterNilDefaultConfig,
-    FilterNilStage,
-    ReGenPrefix,
-    Delimiter
-} from '../config';
+import { FilterNilStage, DefaultValue } from '../config';
 import { complement, forEach, is, isEmpty, isNil, not } from 'ramda';
 import { getGroup } from 'rxjs-watcher';
 import { Global } from '../store';
@@ -68,8 +61,8 @@ export const transformFilterNilOptionToBoolean: (
         return true;
     }
     // 如果没有传入过滤空值的相关配置，则采用默认的处理方式
-    if (isNil(nilOption) && FilterNilDefaultConfig.Stage.includes(stage)) {
-        return FilterNilDefaultConfig.Value;
+    if (isNil(nilOption) && DefaultValue.FilterNil.Stage.includes(stage)) {
+        return DefaultValue.FilterNil.Value;
     }
     // 如果传入的 nilOption 为 false，也会返回false
     return false;
@@ -82,7 +75,7 @@ export const transformDistinctOptionToBoolean: (
     if (typeof item === 'boolean' || typeof item === 'object') {
         return item;
     }
-    return global ?? DistinctDefaultValue;
+    return global ?? DefaultValue.Distinct;
 };
 
 export const OpenLogger = (CacheKey: string, config?: ReGenConfig) => {
@@ -92,7 +85,7 @@ export const OpenLogger = (CacheKey: string, config?: ReGenConfig) => {
             getGroup(
                 `${CacheKey} Watcher Group`,
                 typeof config?.logger === 'boolean'
-                    ? LoggerDurationDefaultValue
+                    ? DefaultValue.LoggerDuration
                     : typeof config?.logger === 'number'
                     ? config.logger
                     : config.logger?.duration
@@ -181,7 +174,7 @@ export const CheckParams = (
 };
 
 export const generateJointName = (CacheKey: string, name: string) =>
-    `${ReGenPrefix}:${CacheKey}:${name}`;
+    `${DefaultValue.Prefix}:${CacheKey}:${name}`;
 
 /**
  * 正确的格式是: prefix:CacheKey:name
@@ -189,8 +182,10 @@ export const generateJointName = (CacheKey: string, name: string) =>
  */
 export const isJointAtom = (joint: any) => {
     if (is(String, joint)) {
-        if (joint.startsWith(`${ReGenPrefix}:`)) {
-            const rest = joint.replace(`${ReGenPrefix}:`, '').split(':');
+        if (joint.startsWith(`${DefaultValue.Prefix}:`)) {
+            const rest = joint
+                .replace(`${DefaultValue.Prefix}:`, '')
+                .split(':');
             if (rest.length === 2) {
                 if (rest[0].length > 0 && rest[1].length > 0) {
                     return rest;
@@ -203,7 +198,7 @@ export const isJointAtom = (joint: any) => {
 };
 
 const generateNameWithCacheKey = (RecordKey: string | symbol, name: string) =>
-    `${String(RecordKey)}${Delimiter}${name}`;
+    `${String(RecordKey)}${DefaultValue.Delimiter}${name}`;
 export const generateNameInHook = (
     RecordKey: string | symbol,
     name?: string

@@ -10,6 +10,7 @@ function App() {
             showRegion,
             RegionList,
             testMoreDepend,
+            showChange,
             ReGenValue: { setValue }
         }
     } = useReGen(
@@ -28,6 +29,7 @@ function App() {
             <div>showRegionValue: {JSON.stringify(showRegion)}</div>
             <div>RegionListValue: {JSON.stringify(RegionList)}</div>
             <div>testMoreDependValue: {JSON.stringify(testMoreDepend)}</div>
+            <div>{JSON.stringify(showChange)}</div>
             <div></div>
 
             <br />

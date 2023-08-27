@@ -21,7 +21,7 @@ import {
     getValue,
     setValue
 } from '../../Atom';
-import { Delimiter } from '../../config';
+import { DefaultValue } from '../../config';
 
 interface IResultAtomsValue {
     [x: `${string}`]: any;
@@ -151,7 +151,7 @@ export function useReGen(
         Object.keys(RelationConfig).forEach((RecordKey) => {
             result[RecordKey] = { ...getRecordValue(CacheKey, RecordKey) };
             Object.keys(AtomsValue).forEach((valueName) => {
-                const names = valueName.split(Delimiter);
+                const names = valueName.split(DefaultValue.Delimiter);
                 if (RecordKey === names[0]) {
                     const key = names[1];
                     result[RecordKey][key] = AtomsValue[valueName];

@@ -24,7 +24,7 @@ import type { IConfigItem } from './type';
 import { forEach } from 'ramda';
 import type { IAtomInOut, IRelationConfig, ReGenConfig } from './type';
 
-import { CombineType, FilterNilStage, ReGenPrefix } from './config';
+import { CombineType, FilterNilStage, DefaultValue } from './config';
 import {
     handleCombine,
     handleDependValueChange,
@@ -44,7 +44,7 @@ const ConfigToAtomStore =
     (CacheKey: string) => (RelationConfig: IConfigItem[]) =>
         // 里面用到的 forEach 来自 ramda，它会将传入的参数返回
         forEach((item: IConfigItem) => {
-            const jointName = `${ReGenPrefix}:${CacheKey}:${item.name}`;
+            const jointName = `${DefaultValue.Prefix}:${CacheKey}:${item.name}`;
             let initValue = item.init;
             if (typeof item.init === 'function') {
                 initValue = item.init();

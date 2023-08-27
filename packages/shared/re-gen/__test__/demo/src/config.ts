@@ -38,14 +38,23 @@ export const RelationConfig: IConfigItem[] = [
             // combineType: CombineType.SELF_CHANGE,
             handle(
                 aa: [show: boolean, area: string],
-                isChange,
-                beforeAndCurrent
+                _isChange,
+                _beforeAndCurrent
             ) {
+                return aa?.[1] === 'CN';
+            }
+        }
+    },
+    {
+        name: 'showChange',
+        depend: {
+            names: ['area', 'showRegion'],
+            handle: (_current, isChange, _beforeAndCurrent) => {
                 console.log(isChange);
-                if (aa?.[1] === 'CN') {
-                    return true;
-                }
-                return false;
+                return {
+                    d: Date.now(),
+                    c: _current[1]
+                };
             }
         }
     }
@@ -133,7 +142,6 @@ export const RelationConfig2: IConfigItem[] = [
             delay(1000),
             switchMap(() => interval(1000))
         ),
-        // init: "CN",
         handle(val) {
             // console.log("handle");
             return new BehaviorSubject(val);

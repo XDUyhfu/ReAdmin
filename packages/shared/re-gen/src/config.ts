@@ -15,9 +15,6 @@
 // 	Out = "Out",
 // }
 
-export const ReGenPrefix = '$$@ReGenPrefix';
-export const Delimiter = ':$$:';
-
 export enum FilterNilStage {
     InBefore = 'InBefore',
     In = 'In',
@@ -36,14 +33,19 @@ export enum CombineType {
     EVERY_CHANGE = 'EVERY_CHANGE'
 }
 
-export const FilterNilDefaultConfig = {
-    // 如果用户没有传入过滤空值的阶段的话，则使用默认值
-    Option: FilterNilStage.Default,
-    // 默认是否过滤空值
-    Value: false,
-    // 默认过滤空值的阶段
-    Stage: [FilterNilStage.In, FilterNilStage.Out]
+export const DefaultValue = {
+    Distinct: true,
+    LoggerDuration: 300,
+    FilterNil: {
+        // 如果用户没有传入过滤空值的阶段的话，则使用默认值
+        Option: FilterNilStage.Default,
+        // 默认是否过滤空值
+        Value: false,
+        // 默认过滤空值的阶段
+        Stage: [FilterNilStage.In, FilterNilStage.Out]
+    },
+    Delimiter: ':$$:',
+    Prefix: '$$@ReGenPrefix'
 };
 
-export const LoggerDurationDefaultValue = 300;
-export const DistinctDefaultValue = true;
+export const ReGenPrefix = DefaultValue.Prefix;
