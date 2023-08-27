@@ -121,11 +121,6 @@ const HandleDepend =
             const dependAtomsOut$ = dependNames.map(
                 (name) => Global.Store.get(CacheKey)!.get(name)!.out$
             );
-            const handleValueChange = handleDependValueChange(
-                CacheKey,
-                item,
-                dependNames
-            );
 
             atom.mid$
                 .pipe(
@@ -135,7 +130,7 @@ const HandleDepend =
                         item.depend?.combineType || CombineType.ANY_CHANGE,
                         dependAtomsOut$
                     ),
-                    handleValueChange,
+                    handleDependValueChange(CacheKey, item, dependNames),
                     map(
                         // 这里的类型不正确 在有 depend 的时候是一个tuple，没有的时候是 any
                         (value: [any, Record<string, boolean>, [any, any]]) =>

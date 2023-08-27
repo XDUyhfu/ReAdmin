@@ -3,8 +3,8 @@
   "private": false,
   "version": "0.3.5",
   "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.mjs",
+  "main": "./dist/re-gen.umd.cjs",
+  "module": "./dist/re-gen.js",
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc && vite build",
@@ -12,8 +12,8 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
+      "import": "./dist/re-gen.js",
+      "require": "./dist/re-gen.umd.cjs"
     }
   },
   "files": [
