@@ -3,11 +3,8 @@
   "private": false,
   "version": "0.3.5",
   "type": "module",
-  "main": "./dist/re-gen.umd.cjs",
-  "module": "./dist/re-gen.js",
-  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc && vite build",
+    "build": "vite build -c ../../../vite.config.ts -m re-gen",
     "test": "vitest"
   },
   "exports": {

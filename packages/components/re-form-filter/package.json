@@ -1,11 +1,11 @@
 {
-  "name": "re-form-filter",
+  "name": "@yhfu/re-form-filter",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build":"vite build -c ../../../vite.config.ts -m re-form-filter",
     "test": "vitest"
   },
   "peerDependencies": {

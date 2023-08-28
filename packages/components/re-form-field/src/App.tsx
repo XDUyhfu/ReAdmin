@@ -1,4 +1,4 @@
-import type { IConfigItem } from '../../../shared/re-gen';
+import type { IConfigItem } from '@yhfu/re-gen';
 import { CombineType, FilterNilStage } from '@re-gen/index';
 import { Button, Input, Select } from 'antd';
 import { delay, map, of } from 'rxjs';

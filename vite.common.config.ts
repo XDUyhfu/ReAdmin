@@ -58,7 +58,7 @@ const ConfigPathMap = {
 
 export const alias = ConfigPathMap.alias;
 
-type EntryList = keyof (typeof ConfigPathMap)['lib'];
+export type EntryList = keyof (typeof ConfigPathMap)['lib'];
 
 export const getLib = (
     name: string,
@@ -115,7 +115,7 @@ export const componentPlugin = (command: 'build' | 'serve') => [
             command === 'build' ? 'production' : 'development'
         )
     }),
-    eslint(),
+    eslint({ exclude: '**/dist/**' }),
     stylelint({
         cache: false,
         fix: true

@@ -8,7 +8,7 @@
   "types": "./dist/re-hooks.d.ts",
   "scripts": {
     "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "vite build -c ../../../vite.config.ts -m re-hooks",
     "test": "vitest"
   },
   "peerDependencies": {
