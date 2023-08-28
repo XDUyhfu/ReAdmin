@@ -14,7 +14,7 @@ import { FilterNilStage, DefaultValue } from '../config';
 import { complement, forEach, is, isEmpty, isNil, not } from 'ramda';
 import { getGroup } from 'rxjs-watcher';
 import { Global } from '../store';
-import { AtomState, getOutObservable } from '@re-gen/Atom.ts';
+import { AtomState, getOutObservable } from '../Atom.ts';
 
 export const isArray = (value: any): value is Array<any> =>
     Array.isArray(value);
