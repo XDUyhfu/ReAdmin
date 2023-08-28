@@ -1,5 +1,5 @@
 import { Button, Input, Switch } from 'antd';
-import { useReGen } from '../../../../re-hooks/src';
+import { useReGen } from '@yhfu/re-hooks';
 
 import { Config } from './config';
 

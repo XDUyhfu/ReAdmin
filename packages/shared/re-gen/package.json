@@ -12,8 +12,9 @@
   },
   "exports": {
     ".": {
-      "import": "./dist/re-gen.js",
-      "require": "./dist/re-gen.umd.cjs"
+      "import":  "./dist/re-gen.js",
+      "require": "./dist/re-gen.umd.cjs",
+      "types": "./dist/index.d.ts"
     }
   },
   "files": [

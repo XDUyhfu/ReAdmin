@@ -6,22 +6,20 @@ import {
     isPlainResult,
     isJointAtom,
     generateNameInHook,
-    flatRelationConfig
-} from '@re-gen/utils';
+    flatRelationConfig,
+    ReGen,
+    getOutObservable,
+    getInObservable,
+    getValue,
+    setValue,
+    DefaultValue
+} from '@yhfu/re-gen';
 import type {
     IConfigItem,
     IConfigItemInit,
     IRelationConfig,
     ReGenConfig
-} from '@re-gen/type';
-import { ReGen } from '@re-gen/Builder';
-import {
-    getOutObservable,
-    getInObservable,
-    getValue,
-    setValue
-} from '@re-gen/Atom';
-import { DefaultValue } from '@re-gen/config';
+} from '@yhfu/re-gen';
 
 interface IResultAtomsValue {
     [x: `${string}`]: any;

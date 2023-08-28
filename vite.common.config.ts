@@ -97,7 +97,7 @@ export const tw = () =>
 
 export const projectPlugin = () => [
     react(),
-    eslint(),
+    eslint({ exclude: '**/dist/**' }),
     stylelint({
         exclude: ['node_modules'],
         cache: false
@@ -134,7 +134,7 @@ export const libPlugin = (command: 'build' | 'serve') => [
             command === 'build' ? 'production' : 'development'
         )
     }),
-    eslint(),
+    eslint({ exclude: '**/dist/**' }),
     dts({
         exclude: 'vite.config.ts',
         rollupTypes: true

@@ -3,6 +3,9 @@
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "module": "./dist/re-hooks.js",
+  "main": "./dist/re-hooks.umd.cjs",
+  "types": "./dist/re-hooks.d.ts",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -11,5 +14,8 @@
   "peerDependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
+  },
+  "dependencies": {
+    "@yhfu/re-gen": "workspace:*"
   }
 }

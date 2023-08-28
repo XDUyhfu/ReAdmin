@@ -22,5 +22,5 @@
     "noFallthroughCasesInSwitch": true
   },
   "include": ["**/src", "**/vite.config.ts", "jest.config.js", "global.d.ts"],
-  "exclude": ["**/__test__/**"]
+  "exclude": ["**/dist/**"]
 }
