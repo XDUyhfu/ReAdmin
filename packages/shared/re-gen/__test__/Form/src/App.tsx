@@ -1,4 +1,4 @@
-import { useReGen } from '../../../src';
+import { useReGen } from '../../../../re-hooks/src';
 
 import React from 'react';
 import type { IItem } from './config';

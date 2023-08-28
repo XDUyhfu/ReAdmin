@@ -1,4 +1,4 @@
-import { useReGen } from '../../../src';
+import { useReGen } from '../../../../re-hooks/src';
 import { Config, RelationConfig, RelationConfig2 } from './config';
 import { Button, Select } from 'antd';
 
