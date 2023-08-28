@@ -5,7 +5,8 @@
       "@re-utils/*": ["./packages/shared/re-utils/src/*"],
       "@re-hooks/*": ["./packages/shared/re-hooks/src/*"],
       "@re-backend/*": ["./packages/projects/re-backend/src/*"],
-      "@re-form-filter/*": ["./packages/components/re-form-filter/src/*"]
+      "@re-form-filter/*": ["./packages/components/re-form-filter/src/*"],
+      "@re-form-field/*": ["./packages/components/re-form-field/src/*"]
     }
   }
 }

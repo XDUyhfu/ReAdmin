@@ -19,6 +19,10 @@ const ConfigPathMap = {
             __dirname,
             './packages/components/re-form-filter/src'
         ),
+        '@re-form-field': path.resolve(
+            __dirname,
+            './packages/components/re-form-field/src'
+        ),
         '@re-backend': path.resolve(
             __dirname,
             './packages/projects/re-backend/src'
@@ -40,6 +44,10 @@ const ConfigPathMap = {
         're-form-filter': path.resolve(
             __dirname,
             './packages/components/re-form-filter/src/index.ts'
+        ),
+        're-form-field': path.resolve(
+            __dirname,
+            './packages/components/re-form-field/src/index.ts'
         ),
         're-backend': path.resolve(
             __dirname,

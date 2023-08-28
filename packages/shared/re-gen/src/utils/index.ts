@@ -1,4 +1,4 @@
-import { isObservable } from 'rxjs';
+import { BehaviorSubject, isObservable } from 'rxjs';
 import type { ObservableInput } from 'rxjs';
 import { of } from 'rxjs';
 import type {
@@ -14,6 +14,7 @@ import { FilterNilStage, DefaultValue } from '../config';
 import { complement, forEach, is, isEmpty, isNil, not } from 'ramda';
 import { getGroup } from 'rxjs-watcher';
 import { Global } from '../store';
+import { AtomState, getOutObservable } from '@re-gen/Atom.ts';
 
 export const isArray = (value: any): value is Array<any> =>
     Array.isArray(value);
@@ -251,3 +252,44 @@ export const flatRelationConfig = (
 export const isValidRelationConfig = (RelationConfig: IConfigItem[]) =>
     RelationConfig?.length > 0;
 export const isInit = (CacheKey: string) => !Global.Store.has(CacheKey);
+
+/**
+ * 通过 init 判断其是否是依赖于其他的 atom
+ * 如果依赖于其他的 atom，在他的依赖没有生成之前，会产生一个中间状态的subject，之后通过订阅的方式将其进行链接 -- atom -- subject -- atom --
+ *
+ * @param CacheKey
+ * @param item
+ */
+export const generateAndStoreAtom = (CacheKey: string, item: IConfigItem) => {
+    const joint = isJointAtom(item.init);
+    // 如果 observable 有值，说明其依赖已经生成
+    let observable = joint ? getOutObservable(joint[0])[joint[1]] : null;
+    // 该 atom 需要链接到其他状态，但是那个 atom 还没有生成的时候，先产生一个中间bridge的 subject
+    if (!observable && Array.isArray(joint)) {
+        observable = new BehaviorSubject(null);
+        // 此时的 item.init 为 a:$$:b 类型
+        Global.AtomBridge.set(item.init as string, [
+            ...(Global.AtomBridge.get(item.init as string) ?? []),
+            observable
+        ]);
+    }
+    const initValue = typeof item.init === 'function' ? item.init() : item.init;
+    const atom = new AtomState(joint ? observable : initValue);
+    // 存储为全局变量
+    Global.Store.get(CacheKey)!.set(item.name, atom);
+};
+
+/**
+ *  当一个 atom 生成的时候，就获取依赖于它的 subject ，然后通过 subscribe 的方式将其进行链接
+ * @param CacheKey
+ * @param item
+ */
+export const subscribeDependAtom = (CacheKey: string, item: IConfigItem) => {
+    const jointName = generateJointName(CacheKey, item.name);
+    const atom = Global.Store.get(CacheKey)!.get(item.name)!;
+    if (Global.AtomBridge.has(jointName)) {
+        Global.AtomBridge.get(jointName)!.forEach((observable) =>
+            atom.out$.subscribe(observable)
+        );
+    }
+};

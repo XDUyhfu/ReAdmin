@@ -1,15 +1,17 @@
-import { BehaviorSubject, filter, map, of, scan } from 'rxjs';
-import { AtomInOut, AtomState, getOutObservable } from './Atom';
+import { filter, map, of, scan } from 'rxjs';
+import { AtomInOut, getOutObservable } from './Atom';
 import {
     CheckParams,
     defaultReduceFunction,
     flatRelationConfig,
     getDependNames,
+    generateAndStoreAtom,
     isInit,
     isJointAtom,
     isValidRelationConfig,
     OpenLogger,
-    transformDistinctOptionToBoolean
+    transformDistinctOptionToBoolean,
+    subscribeDependAtom
 } from './utils';
 import type {
     IAtomInOut,
@@ -19,7 +21,7 @@ import type {
 } from './type';
 import { forEach } from 'ramda';
 
-import { CombineType, DefaultValue, FilterNilStage } from './config';
+import { CombineType, FilterNilStage } from './config';
 import {
     handleCombine,
     handleDependValueChange,
@@ -40,33 +42,9 @@ const ConfigToAtomStore =
     (CacheKey: string) => (RelationConfig: IConfigItem[]) =>
         // 里面用到的 forEach 来自 ramda，它会将传入的参数返回
         forEach((item: IConfigItem) => {
-            const jointName = `${DefaultValue.Prefix}:${CacheKey}:${item.name}`;
-            let initValue = item.init;
-            if (typeof item.init === 'function') {
-                initValue = item.init();
-            }
-            const joint = isJointAtom(item.init);
-            let observable = joint
-                ? getOutObservable(joint[0])[joint[1]]
-                : null;
-            if (!observable && Array.isArray(joint)) {
-                observable = new BehaviorSubject(null);
-                if (Global.AtomBridge.has(item.init as string)) {
-                    Global.AtomBridge.set(item.init as string, [
-                        ...Global.AtomBridge.get(item.init as string)!,
-                        observable
-                    ]);
-                } else {
-                    Global.AtomBridge.set(item.init as string, [observable]);
-                }
-            }
-            const atom = new AtomState(joint ? observable : initValue);
-            if (Global.AtomBridge.has(jointName)) {
-                Global.AtomBridge.get(jointName)!.forEach((observable) =>
-                    atom.out$.subscribe(observable)
-                );
-            }
-            Global.Store.get(CacheKey)!.set(item.name, atom);
+            generateAndStoreAtom(CacheKey, item);
+            // 如果是需要 depend atom 的话，需要进行订阅
+            subscribeDependAtom(CacheKey, item);
         })(RelationConfig);
 
 /**

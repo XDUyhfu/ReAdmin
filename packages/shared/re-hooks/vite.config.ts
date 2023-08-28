@@ -13,7 +13,7 @@ export default defineConfig(({ command }) => ({
         alias
     },
     build: {
-        lib: getLib('ReUtils', 're-utils'),
+        lib: getLib('ReHooks', 're-hooks'),
         rollupOptions
     },
     test: DOMTest
