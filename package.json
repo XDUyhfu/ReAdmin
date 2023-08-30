@@ -9,7 +9,7 @@
     "build": "pnpm -r run build",
     "lint": "npm run lint:script && npm run lint:style",
     "lint:script": "eslint --ext .js,.jsx,.ts,.tsx --fix --quiet \"./packages/**/*.{js,ts,jsx,tsx}\"",
-    "lint:style": "stylelint --fix \"./packages/**/*.{css,scss,less}\"",
+    "lint:style": "stylelint --fix \"packages/**/*.{css,scss,sass}\" \"!**/__test__/**\"",
     "test": "vitest"
   },
   "dependencies": {
