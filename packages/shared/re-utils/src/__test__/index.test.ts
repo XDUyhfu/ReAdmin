@@ -1,5 +1,6 @@
 import { TestScheduler } from 'rxjs/testing';
 import { concatMap, EMPTY, expand, of, timer } from 'rxjs';
+import { describe, it, expect } from 'vitest';
 
 const testScheduler = new TestScheduler((actual, expected) => {
     expect(actual).deep.equal(expected);
@@ -21,9 +22,9 @@ describe('timer', () => {
                     )
                 )
             );
-            const expected = '---|';
+            const expected = 'a--|';
 
-            expectObservable(intervalTimer).toBe(expected);
+            expectObservable(intervalTimer).toBe(expected, { a: 0 });
         });
     });
 });

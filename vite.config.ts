@@ -3,10 +3,8 @@ import type { EntryList } from './vite.common.config.ts';
 import {
     alias,
     componentPlugin,
-    DOMTest,
     getLib,
     libPlugin,
-    NodeTest,
     projectPlugin,
     rollupOptions,
     server,
@@ -20,13 +18,6 @@ const getPlugin = (command: 'build' | 'serve', mode: string) =>
         lib: libPlugin(command),
         project: projectPlugin(),
         component: componentPlugin(command)
-    }[mode]);
-
-const getTest = (mode: string) =>
-    ({
-        lib: NodeTest,
-        project: DOMTest,
-        component: DOMTest
     }[mode]);
 
 export default defineConfig(({ command, mode }) => {
@@ -51,7 +42,6 @@ export default defineConfig(({ command, mode }) => {
                           meta.bundleName as EntryList
                       ),
                       rollupOptions
-                  },
-        test: getTest(meta.mode)
+                  }
     };
 });
