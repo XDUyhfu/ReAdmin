@@ -2,9 +2,6 @@ import { TestScheduler } from 'rxjs/testing';
 import { delay, of, take } from 'rxjs';
 
 const testScheduler = new TestScheduler((actual, expected) => {
-    // asserting the two objects are equal - required
-    // for TestScheduler assertions to work via your test framework
-    // e.g. using chai.
     expect(actual).deep.equal(expected);
 });
 

@@ -3,7 +3,6 @@ import { concatMap, of, expand, timer } from 'rxjs';
 
 export class Timer {
     timerRequest: Subscription;
-
     constructor(second: number, callback: (...args: any[]) => void) {
         this.timerRequest = of(0)
             .pipe(
@@ -18,7 +17,6 @@ export class Timer {
             )
             .subscribe();
     }
-
     cancel() {
         this.timerRequest.unsubscribe();
     }

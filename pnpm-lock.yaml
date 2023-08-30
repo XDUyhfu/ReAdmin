@@ -199,7 +199,14 @@ importers:
         specifier: ^3.1.8
         version: 3.1.8
 
-  packages/components/re-form-field: {}
+  packages/components/re-form-field:
+    dependencies:
+      react:
+        specifier: ^18.2.0
+        version: 18.2.0
+      react-dom:
+        specifier: ^18.2.0
+        version: 18.2.0(react@18.2.0)
 
   packages/components/re-form-filter:
     dependencies:
@@ -213,30 +220,6 @@ importers:
   packages/projects/re-backend: {}
 
   packages/shared/re-gen: {}
-
-  packages/shared/re-gen/__test__/Form:
-    dependencies:
-      '@yhfu/re-hooks':
-        specifier: workspace:*
-        version: link:../../../re-hooks
-
-  packages/shared/re-gen/__test__/StateExtension:
-    dependencies:
-      '@yhfu/re-hooks':
-        specifier: workspace:*
-        version: link:../../../re-hooks
-
-  packages/shared/re-gen/__test__/demo:
-    dependencies:
-      '@yhfu/re-hooks':
-        specifier: workspace:^
-        version: link:../../../re-hooks
-
-  packages/shared/re-gen/__test__/depend-atom:
-    dependencies:
-      '@yhfu/re-hooks':
-        specifier: workspace:*
-        version: link:../../../re-hooks
 
   packages/shared/re-hooks:
     dependencies:

@@ -10,7 +10,7 @@
     "lint": "npm run lint:script && npm run lint:style",
     "lint:script": "eslint --ext .js,.jsx,.ts,.tsx --fix --quiet \"./packages/**/*.{js,ts,jsx,tsx}\"",
     "lint:style": "stylelint --fix \"./packages/**/*.{css,scss,less}\"",
-    "test": "jest"
+    "test": "vitest"
   },
   "dependencies": {
     "@ant-design/icons": "^5.2.5",
