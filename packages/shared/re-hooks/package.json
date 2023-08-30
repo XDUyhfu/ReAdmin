@@ -7,7 +7,7 @@
   "main": "./dist/re-hooks.umd.cjs",
   "types": "./dist/re-hooks.d.ts",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite -c ../../../vite.config.ts -m re-hooks",
     "build": "vite build -c ../../../vite.config.ts -m re-hooks",
     "test": "vitest"
   },

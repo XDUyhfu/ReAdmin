@@ -14,9 +14,10 @@
     }
   },
   "scripts": {
-    "dev": "vite",
+    "dev": "vite -c ../../../vite.config.ts -m re-form-field",
     "build": "vite build -c ../../../vite.config.ts -m re-form-field",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "test": "vitest"
   },
   "publishConfig": {
     "access": "public"
