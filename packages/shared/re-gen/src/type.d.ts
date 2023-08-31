@@ -1,4 +1,4 @@
-import type { Observable, ObservableInput } from 'rxjs';
+import type { BehaviorSubject, Observable, ObservableInput } from 'rxjs';
 import type { FilterNilStage, CombineType } from './config';
 
 export type PlainResult =
@@ -65,7 +65,7 @@ export interface IConfigItem {
     withTimestamp?: boolean;
 }
 
-export type AtomsType = Record<string, AnyBehaviorSubject>;
+export type AtomsType = Record<string, BehaviorSubject<any>>;
 
 export type PluckValueType = {
     name: string;

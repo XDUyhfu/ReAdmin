@@ -1,5 +1,4 @@
 import path from 'path';
-import tailwindcss from 'tailwindcss';
 import react from '@vitejs/plugin-react';
 import stylelint from 'vite-plugin-stylelint';
 import legacy from '@vitejs/plugin-legacy';
@@ -90,11 +89,6 @@ export const server = {
     host: '0.0.0.0'
 };
 
-export const tw = () =>
-    tailwindcss({
-        config: path.resolve(__dirname, './tailwind.config.js')
-    });
-
 export const projectPlugin = () => [
     react(),
     eslint({ exclude: '**/dist/**' }),
@@ -123,7 +117,8 @@ export const componentPlugin = (command: 'build' | 'serve') => [
     cssInjectedByJsPlugin(),
     dts({
         exclude: 'vite.config.ts',
-        rollupTypes: true
+        rollupTypes: true,
+        copyDtsFiles: true
     })
 ];
 
@@ -134,11 +129,12 @@ export const libPlugin = (command: 'build' | 'serve') => [
             command === 'build' ? 'production' : 'development'
         )
     }),
-    eslint({ exclude: '**/dist/**' }),
     dts({
         exclude: 'vite.config.ts',
-        rollupTypes: true
-    })
+        rollupTypes: true,
+        copyDtsFiles: true
+    }),
+    eslint({ exclude: '**/dist/**' })
 ];
 
 export const DOMTest = {

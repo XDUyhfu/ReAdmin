@@ -7,11 +7,12 @@ import {
     libPlugin,
     projectPlugin,
     rollupOptions,
-    server,
-    tw
+    server
 } from './vite.common.config.ts';
 import MetaConfig from './meta.config.ts';
 import autoprefixer from 'autoprefixer';
+import tailwindcss from 'tailwindcss';
+import path from 'path';
 
 const getPlugin = (command: 'build' | 'serve', mode: string) =>
     ({
@@ -30,7 +31,12 @@ export default defineConfig(({ command, mode }) => {
         server,
         css: {
             postcss: {
-                plugins: [tw(), autoprefixer]
+                plugins: [
+                    tailwindcss({
+                        config: path.resolve(__dirname, './tailwind.config.ts')
+                    }),
+                    autoprefixer
+                ]
             }
         },
         build:

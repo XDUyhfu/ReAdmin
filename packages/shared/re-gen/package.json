@@ -7,6 +7,9 @@
     "build": "vite build -c ../../../vite.config.ts -m re-gen",
     "test": "vitest"
   },
+  "module": "./dist/re-gen.js",
+  "main": "./dist/re-gen.umd.cjs",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "import":  "./dist/re-gen.js",
