@@ -14,7 +14,7 @@ export {
 export { ReGen } from './Builder';
 export { setValue, getValue, getInObservable, getOutObservable } from './Atom';
 export {
-    generateJointName,
+    JointState,
     PluckName,
     CheckParams,
     isPlainResult,

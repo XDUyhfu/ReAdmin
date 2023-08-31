@@ -9,7 +9,7 @@ export type PlainResult =
     | undefined
     | null;
 
-type RxResult = ObservableInput<any>;
+export type RxResult = ObservableInput<any>;
 
 export type ReturnResult = PlainResult | RxResult;
 
@@ -21,7 +21,7 @@ export type IDistinct<T = any, K = any> =
       }
     | undefined;
 
-type InitFunctionType = (
+export type InitFunctionType = (
     ...args: any[]
 ) => Promise<any> | Observable<any> | PlainResult;
 

@@ -42,7 +42,7 @@ const App: React.FC = () => {
                         </Content>
                     </Layout>
                     <Footer className="text-center">
-                        admin ©2023 Created by yhfu@stu.xidian.edu.cn
+                        re-admin ©2023 Created by yhfu@stu.xidian.edu.cn
                     </Footer>
                 </Layout>
             </Layout>

@@ -1,6 +1,10 @@
 import { Avatar, Card, Col, Descriptions, Row, Skeleton } from 'antd';
 import type { DescriptionsProps } from 'antd';
-import { useDelay } from '@re-hooks/index';
+import { useDelay, useReGen } from '@re-hooks/index';
+import {
+    InfoCacheKey,
+    InfoConfig
+} from '@re-backend/pages/user/setting/logic.ts';
 
 const items: DescriptionsProps['items'] = [
     {
@@ -32,9 +36,11 @@ const items: DescriptionsProps['items'] = [
 
 export const InfoPanel = () => {
     const delayResult = useDelay(1000);
+    const { info } = useReGen(InfoCacheKey, InfoConfig);
 
     return (
         <Card>
+            {`${info?.data?.login} ${Date.now()}`}
             <Row align="middle">
                 {delayResult ? (
                     <>

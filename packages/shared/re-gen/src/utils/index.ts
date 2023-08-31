@@ -174,7 +174,7 @@ export const CheckParams = (
     DependencyDetection(RelationConfig);
 };
 
-export const generateJointName = (CacheKey: string, name: string) =>
+export const JointState = (CacheKey: string, name: string) =>
     `${DefaultValue.Prefix}:${CacheKey}:${name}`;
 
 /**
@@ -285,7 +285,7 @@ export const generateAndStoreAtom = (CacheKey: string, item: IConfigItem) => {
  * @param item
  */
 export const subscribeDependAtom = (CacheKey: string, item: IConfigItem) => {
-    const jointName = generateJointName(CacheKey, item.name);
+    const jointName = JointState(CacheKey, item.name);
     const atom = Global.Store.get(CacheKey)!.get(item.name)!;
     if (Global.AtomBridge.has(jointName)) {
         Global.AtomBridge.get(jointName)!.forEach((observable) =>
