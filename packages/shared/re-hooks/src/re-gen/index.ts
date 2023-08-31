@@ -45,8 +45,10 @@ interface IResultAtomsValue {
     };
 }
 
-interface IResultRecordAtomsValue {
-    [x: `${string}`]: {
+type IResultRecordAtomsValue<
+    RecordConfigItem extends Record<string, IConfigItem[] | IConfigItem[][]>
+> = {
+    [K in keyof RecordConfigItem]: {
         [y: `${string}`]: any;
         ReGenValue: {
             getValue: {
@@ -69,7 +71,7 @@ interface IResultRecordAtomsValue {
             };
         };
     };
-}
+};
 
 const getRecordValue = (CacheKey: string, RecordKey: string) => ({
     ReGenValue: {
@@ -98,18 +100,18 @@ const getReValue = (CacheKey: string) => ({
     }
 });
 
-export function useReGen(
+export function useReGen<P extends IConfigItem[] | IConfigItem[][]>(
     CacheKey: string,
-    RelationConfig: IConfigItem[] | IConfigItem[][],
+    RelationConfig: P,
     config?: ReGenConfig
 ): IResultAtomsValue;
-export function useReGen(
+export function useReGen<
+    RecordConfigItem extends Record<string, IConfigItem[] | IConfigItem[][]>
+>(
     CacheKey: string,
-    RelationConfig:
-        | Record<string, IConfigItem[]>
-        | Record<string, IConfigItem[][]>,
+    RelationConfig: RecordConfigItem,
     config?: ReGenConfig
-): IResultRecordAtomsValue;
+): IResultRecordAtomsValue<RecordConfigItem>;
 export function useReGen(
     CacheKey: string,
     RelationConfig: IRelationConfig,
@@ -156,7 +158,9 @@ export function useReGen(
                 }
             });
         });
-        return { ...result } as unknown as IResultRecordAtomsValue;
+        return { ...result } as unknown as IResultRecordAtomsValue<
+            typeof RelationConfig
+        >;
     }
 
     return {
