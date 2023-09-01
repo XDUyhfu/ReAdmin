@@ -31,8 +31,8 @@ export type IConfigItemInit =
     | PlainResult
     | InitFunctionType;
 
-export interface IConfigItem {
-    name: string;
+export interface IConfigItem<Name extends string = string> {
+    name: Name;
     init?: IConfigItemInit;
     handle?: (arg: any) => ReturnResult;
     depend?: {

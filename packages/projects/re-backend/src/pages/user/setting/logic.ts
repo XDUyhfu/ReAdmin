@@ -16,11 +16,11 @@ export const InfoConfig: IConfigItem[] = [
     }
 ];
 
-export const SettingConfig: IConfigItem[] = [
+export const SettingConfig = [
     {
         name: 'update',
         handle: (value: any) => {
             return of(value).pipe(delay(2000));
         }
     }
-];
+] as const;

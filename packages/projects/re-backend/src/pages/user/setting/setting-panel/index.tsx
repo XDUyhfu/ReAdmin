@@ -7,10 +7,12 @@ import {
 
 export const SettingPanel = () => {
     const {
+        update,
         ReGenValue: { setValue }
     } = useReGen(SettingCacheKey, SettingConfig);
     return (
         <Card>
+            {JSON.stringify(update)}
             <Tabs
                 tabPosition="left"
                 activeKey="0"
@@ -21,8 +23,8 @@ export const SettingPanel = () => {
                         children: (
                             <div>
                                 <Button
-                                    onClick={(e) => {
-                                        setValue('update', e);
+                                    onClick={() => {
+                                        setValue('update', 'update');
                                     }}>
                                     更新信息
                                 </Button>

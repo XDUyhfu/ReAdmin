@@ -21,8 +21,30 @@ import type {
     ReGenConfig
 } from '@yhfu/re-gen';
 
-interface IResultAtomsValue {
-    [x: `${string}`]: any;
+type FlatConfigList<
+    ConfigList extends readonly IConfigItem[] | IConfigItem[][]
+> = ConfigList extends readonly IConfigItem[]
+    ? ConfigList
+    : ConfigList extends [
+          infer First extends readonly IConfigItem[],
+          ...infer Rest extends IConfigItem[][]
+      ]
+    ? [...First, ...FlatConfigList<Rest>]
+    : [];
+
+type ConfigListNames<ConfigList extends readonly IConfigItem[]> =
+    ConfigList extends readonly [
+        infer Item extends IConfigItem,
+        ...infer Rest extends IConfigItem[]
+    ]
+        ? Item['name'] | ConfigListNames<Rest>
+        : never;
+
+type IResultAtomsValue<
+    ConfigList extends readonly IConfigItem[] | IConfigItem[][] = []
+> = {
+    [Key in ConfigListNames<FlatConfigList<ConfigList>>]: unknown;
+} & {
     ReGenValue: {
         getValue: {
             (): Record<string, any>;
@@ -43,10 +65,13 @@ interface IResultAtomsValue {
             (name: string): BehaviorSubject<any>;
         };
     };
-}
+};
 
 type IResultRecordAtomsValue<
-    RecordConfigItem extends Record<string, IConfigItem[] | IConfigItem[][]>
+    RecordConfigItem extends Record<
+        string,
+        IConfigItem[] | IConfigItem[][]
+    > = NonNullable<unknown>
 > = {
     [K in keyof RecordConfigItem]: {
         [y: `${string}`]: any;
@@ -100,11 +125,13 @@ const getReValue = (CacheKey: string) => ({
     }
 });
 
-export function useReGen<P extends IConfigItem[] | IConfigItem[][]>(
+export function useReGen<
+    ConfigList extends readonly IConfigItem[] | IConfigItem[][]
+>(
     CacheKey: string,
-    RelationConfig: P,
+    RelationConfig: ConfigList,
     config?: ReGenConfig
-): IResultAtomsValue;
+): IResultAtomsValue<ConfigList>;
 export function useReGen<
     RecordConfigItem extends Record<string, IConfigItem[] | IConfigItem[][]>
 >(
@@ -146,6 +173,7 @@ export function useReGen(
         };
     }, {} as IResultAtomsValue);
 
+    // Record 类型的参数
     if (!Array.isArray(RelationConfig)) {
         const result: Record<string, any> = {};
         Object.keys(RelationConfig).forEach((RecordKey) => {
@@ -154,13 +182,13 @@ export function useReGen(
                 const names = valueName.split(DefaultValue.Delimiter);
                 if (RecordKey === names[0]) {
                     const key = names[1];
+                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                    // @ts-ignore
                     result[RecordKey][key] = AtomsValue[valueName];
                 }
             });
         });
-        return { ...result } as unknown as IResultRecordAtomsValue<
-            typeof RelationConfig
-        >;
+        return { ...result } as unknown as IResultRecordAtomsValue;
     }
 
     return {
