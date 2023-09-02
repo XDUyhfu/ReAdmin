@@ -37,10 +37,9 @@ const items: DescriptionsProps['items'] = [
 export const InfoPanel = () => {
     const delayResult = useDelay(1000);
     const { info } = useReGen(InfoCacheKey, InfoConfig);
-
+    console.log(info);
     return (
         <Card>
-            {`${info?.data?.login} ${Date.now()}`}
             <Row align="middle">
                 {delayResult ? (
                     <>

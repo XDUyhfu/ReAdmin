@@ -1,20 +1,17 @@
-import type { IConfigItem } from '@yhfu/re-gen';
 import { JointState } from '@yhfu/re-gen';
-import axios from 'axios';
 import { delay, of } from 'rxjs';
+import { ReRequest } from '@re-utils/re-request';
 
 export const InfoCacheKey = 'User-Info';
 export const SettingCacheKey = 'User-Setting';
 
-export const InfoConfig: IConfigItem[] = [
+export const InfoConfig = [
     {
         name: 'info',
         init: JointState(SettingCacheKey, 'update'),
-        handle: () => {
-            return axios.get('https://api.github.com/users/XDUyhfu');
-        }
+        handle: () => ReRequest({ url: 'https://api.github.com/users/XDUyhfu' })
     }
-];
+] as const;
 
 export const SettingConfig = [
     {
