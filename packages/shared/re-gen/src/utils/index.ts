@@ -232,8 +232,7 @@ const recordToArrayType = (
     const config: IConfigItem[] = [];
     RelationConfig &&
         Object.keys(RelationConfig).forEach((RecordKey) => {
-            const configs = RelationConfig[RecordKey].flat();
-            configs.forEach((c: IConfigItem) => {
+            map((c: IConfigItem) => {
                 const modifyC = modifyPath<IConfigItem>(
                     ['depend', 'names'],
                     map(generateNameWithCacheKeyWithCurry(RecordKey)),
@@ -244,7 +243,7 @@ const recordToArrayType = (
                     )
                 );
                 config.push(modifyC);
-            });
+            }, RelationConfig[RecordKey].flat());
         });
     return config;
 };
