@@ -1,4 +1,4 @@
-import { filter, map, of, scan } from 'rxjs';
+import { filter, map, of, scan, tap } from 'rxjs';
 import { AtomInOut, getOutObservable } from './Atom';
 import {
     CheckParams,
@@ -31,7 +31,7 @@ import {
     handleTransformValue,
     WithTimeout
 } from './operator';
-import { Global, InitGlobalValue } from './store';
+import { Global, InitGlobal } from './store';
 
 /**
  * 该方法将每个配置项构建为一个 AtomState 并进行存储
@@ -142,17 +142,17 @@ const BuildRelation = (
     RelationConfig: IConfigItem[],
     config?: ReGenConfig
 ) => {
-    if (isInit(CacheKey) && isValidRelationConfig(RelationConfig)) {
-        InitGlobalValue(CacheKey, RelationConfig);
+    isInit(CacheKey) &&
+        isValidRelationConfig(RelationConfig) &&
         of(RelationConfig)
             .pipe(
+                tap(() => InitGlobal(CacheKey)),
                 map(ConfigToAtomStore(CacheKey)),
                 map(AtomHandle(CacheKey, config)),
                 map(HandleDepend(CacheKey, config)),
                 map(HandleInitValue(CacheKey, config))
             )
             .subscribe();
-    }
 };
 
 export const ReGen = (
@@ -160,7 +160,7 @@ export const ReGen = (
     RelationConfig: IRelationConfig,
     config?: ReGenConfig
 ): IAtomInOut => {
-    const flatConfig = flatRelationConfig(CacheKey, RelationConfig);
+    const flatConfig = flatRelationConfig(RelationConfig);
     CheckParams(CacheKey, flatConfig, 'library');
     OpenLogger(CacheKey, config);
     BuildRelation(CacheKey, flatConfig, config);

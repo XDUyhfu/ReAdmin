@@ -1,11 +1,8 @@
 import type { BehaviorSubject, OperatorFunction, ReplaySubject } from 'rxjs';
-import type { IConfigItem, PluckValueType } from './type';
 import type { AtomState } from './Atom';
-import { isInit, isValidRelationConfig, PluckValue } from './utils';
 
 export const Global = {
     Store: new Map<string, Map<string, AtomState>>(),
-    RelationConfig: new Map<string, PluckValueType[]>(),
     AtomBridge: new Map<string, BehaviorSubject<any>[]>(),
     Buffer: new Map<string, Map<string, ReplaySubject<any[]>>>(),
     LoggerWatcher: new Map<
@@ -17,13 +14,7 @@ export const Global = {
     >()
 };
 
-export const InitGlobalValue = (
-    CacheKey: string,
-    RelationConfig: IConfigItem[]
-) => {
-    if (isInit(CacheKey) && isValidRelationConfig(RelationConfig)) {
-        Global.Store.set(CacheKey, new Map<string, AtomState>());
-        Global.RelationConfig.set(CacheKey, PluckValue(RelationConfig));
-        Global.Buffer.set(CacheKey, new Map<string, ReplaySubject<any[]>>());
-    }
+export const InitGlobal = (CacheKey: string) => {
+    Global.Store.set(CacheKey, new Map<string, AtomState>());
+    Global.Buffer.set(CacheKey, new Map<string, ReplaySubject<any[]>>());
 };

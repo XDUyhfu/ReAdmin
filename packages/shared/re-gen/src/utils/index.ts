@@ -1,17 +1,24 @@
-import { BehaviorSubject, isObservable } from 'rxjs';
+import { BehaviorSubject, isObservable, of } from 'rxjs';
 import type { ObservableInput } from 'rxjs';
-import { of } from 'rxjs';
 import type {
     IConfigItem,
     IDistinct,
     ReturnResult,
     ReGenConfig,
-    PluckValueType,
     PlainResult,
     IRelationConfig
 } from '@re-gen/type';
 import { FilterNilStage, DefaultValue } from '../config';
-import { complement, forEach, is, isEmpty, isNil, not } from 'ramda';
+import {
+    complement,
+    forEach,
+    is,
+    isEmpty,
+    isNil,
+    map,
+    modifyPath,
+    not
+} from 'ramda';
 import { getGroup } from 'rxjs-watcher';
 import { Global } from '../store';
 import { AtomState, getOutObservable } from '../Atom.ts';
@@ -94,14 +101,8 @@ export const OpenLogger = (CacheKey: string, config?: ReGenConfig) => {
         );
     }
 };
-
-export const PluckValue = (config: IConfigItem[]): PluckValueType[] =>
-    config.map((item) => ({ init: item?.init, name: item?.name }));
-
 export const PluckName = (config: IConfigItem[]): string[] =>
     config.map((item) => item.name);
-
-const isNotEmpty = complement(isEmpty);
 
 const JudgeRepetition = (RelationConfig: IConfigItem[]) =>
     forEach((item: IConfigItem) => {
@@ -113,6 +114,8 @@ const JudgeRepetition = (RelationConfig: IConfigItem[]) =>
             throw new Error(`${item.name}: 重复的 name 属性`);
         }
     })(RelationConfig);
+
+const isNotEmpty = complement(isEmpty);
 
 export const CheckCacheKey = (CacheKey: string) => {
     if (not(is(String, CacheKey) && isNotEmpty(CacheKey))) {
@@ -149,6 +152,11 @@ const CheckReGenParams = (
     }
 };
 
+/**
+ * 不能依赖自己 不能依赖不存在的 atom
+ * @param RelationConfig
+ * @constructor
+ */
 export const DependencyDetection = (RelationConfig: IConfigItem[]) =>
     forEach((item: IConfigItem) => {
         const dependNames = getDependNames(item);
@@ -167,7 +175,8 @@ export const CheckParams = (
     RelationConfig: IConfigItem[],
     entry: 'hook' | 'library'
 ) => {
-    // 参数检查在 hook 中，配置项不能为空，在使用函数时可以为空，如果为空将不会对 CacheKey 进行存储
+    // 参数检查在 hook 中，配置项不能为空
+    // 作为库使用时可以为空，如果为空将不会对 CacheKey 进行存储
     CheckReGenParams(CacheKey, RelationConfig, entry);
     // 下面这两个判断是不论什么场景都需要进行判断的
     JudgeRepetition(RelationConfig);
@@ -198,56 +207,54 @@ export const isJointAtom = (joint: any) => {
     return false;
 };
 
-const generateNameWithCacheKey = (RecordKey: string | symbol, name: string) =>
-    `${String(RecordKey)}${DefaultValue.Delimiter}${name}`;
+const generateNameWithCacheKeyWithCurry =
+    (RecordKey: string | symbol) => (name: string) =>
+        `${String(RecordKey)}${DefaultValue.Delimiter}${name}`;
+
 export const generateNameInHook = (
     RecordKey: string | symbol,
     name?: string
 ) => {
     if (RecordKey && name) {
-        return generateNameWithCacheKey(RecordKey, name);
+        return generateNameWithCacheKeyWithCurry(RecordKey)(name);
     }
     return name;
 };
 /**
  * 合并多个数组为一个数组
- * @param CacheKey
  * @param RelationConfig
  */
 const recordToArrayType = (
-    CacheKey: string,
     RelationConfig:
         | Record<string, IConfigItem[]>
         | Record<string, IConfigItem[][]>
 ): IConfigItem[] => {
-    if (!Global.RelationConfig.has(CacheKey)) {
-        const config: IConfigItem[] = [];
-        RelationConfig &&
-            Object.keys(RelationConfig).forEach((RecordKey) => {
-                const configs = RelationConfig[RecordKey].flat();
-                configs.forEach((c: IConfigItem) => {
-                    c.name = generateNameWithCacheKey(RecordKey, c.name);
-                    if (c.depend?.names) {
-                        c.depend.names = c.depend.names.map((name) =>
-                            generateNameWithCacheKey(RecordKey, name)
-                        );
-                    }
-                    config.push(c);
-                });
+    const config: IConfigItem[] = [];
+    RelationConfig &&
+        Object.keys(RelationConfig).forEach((RecordKey) => {
+            const configs = RelationConfig[RecordKey].flat();
+            configs.forEach((c: IConfigItem) => {
+                const modifyC = modifyPath<IConfigItem>(
+                    ['depend', 'names'],
+                    map(generateNameWithCacheKeyWithCurry(RecordKey)),
+                    modifyPath(
+                        ['name'],
+                        generateNameWithCacheKeyWithCurry(RecordKey),
+                        c
+                    )
+                );
+                config.push(modifyC);
             });
-        return config;
-    } else {
-        return Global.RelationConfig.get(CacheKey)!;
-    }
+        });
+    return config;
 };
 
 export const flatRelationConfig = (
-    CacheKey: string,
     RelationConfig: IRelationConfig
 ): IConfigItem[] =>
     Array.isArray(RelationConfig)
         ? RelationConfig.flat()
-        : recordToArrayType(CacheKey, RelationConfig);
+        : recordToArrayType(RelationConfig);
 
 export const isValidRelationConfig = (RelationConfig: IConfigItem[]) =>
     RelationConfig?.length > 0;
