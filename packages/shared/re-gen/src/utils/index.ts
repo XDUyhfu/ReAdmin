@@ -11,13 +11,18 @@ import type {
 import { FilterNilStage, DefaultValue } from '../config';
 import {
     complement,
+    compose,
+    cond,
+    flatten,
     forEach,
     is,
     isEmpty,
     isNil,
     map,
+    mapObjIndexed,
     modifyPath,
-    not
+    not,
+    values
 } from 'ramda';
 import { getGroup } from 'rxjs-watcher';
 import { Global } from '../store';
@@ -224,36 +229,43 @@ export const generateNameInHook = (
  * 合并多个数组为一个数组
  * @param RelationConfig
  */
-const recordToArrayType = (
+export const recordToArrayType = (
     RelationConfig:
         | Record<string, IConfigItem[]>
         | Record<string, IConfigItem[][]>
-): IConfigItem[] => {
-    const config: IConfigItem[] = [];
-    RelationConfig &&
-        Object.keys(RelationConfig).forEach((RecordKey) => {
-            map((c: IConfigItem) => {
-                const modifyC = modifyPath<IConfigItem>(
-                    ['depend', 'names'],
-                    map(generateNameWithCacheKeyWithCurry(RecordKey)),
-                    modifyPath(
-                        ['name'],
-                        generateNameWithCacheKeyWithCurry(RecordKey),
-                        c
-                    )
-                );
-                config.push(modifyC);
-            }, RelationConfig[RecordKey].flat());
-        });
-    return config;
-};
+): IConfigItem[] =>
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    compose(
+        flatten,
+        values,
+        mapObjIndexed((_, RecordKey, obj) =>
+            map(
+                (c: IConfigItem) =>
+                    modifyPath<IConfigItem>(
+                        ['depend', 'names'],
+                        map(generateNameWithCacheKeyWithCurry(RecordKey)),
+                        modifyPath(
+                            ['name'],
+                            generateNameWithCacheKeyWithCurry(RecordKey),
+                            c
+                        )
+                    ),
+                obj![RecordKey] as IConfigItem[]
+            )
+        ),
+        map<IConfigItem[] | IConfigItem[][], IConfigItem[]>(flatten)
+    )(RelationConfig);
 
 export const flatRelationConfig = (
     RelationConfig: IRelationConfig
 ): IConfigItem[] =>
-    Array.isArray(RelationConfig)
-        ? RelationConfig.flat()
-        : recordToArrayType(RelationConfig);
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    cond([
+        [is(Array), flatten],
+        [is(Object), recordToArrayType]
+    ])(RelationConfig);
 
 export const isValidRelationConfig = (RelationConfig: IConfigItem[]) =>
     RelationConfig?.length > 0;
