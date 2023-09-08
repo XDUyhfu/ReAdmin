@@ -91,6 +91,7 @@ const handleCombineWithBuffer =
     (source) =>
         Global.Buffer.get(CacheKey)!.has(name)
             ? source.pipe(
+                  // 将新的值传入buffer
                   tap((combineValue) =>
                       Global.Buffer.get(CacheKey)!.get(name)!.next(combineValue)
                   ),
@@ -126,7 +127,7 @@ export const handleDependValueChange = (
     item: IConfigItem,
     dependsName: string[]
 ) => {
-    // 使用额外的 BehaviorSubject 存储数据进行判断
+    // 使用额外的 ReplaySubject 存储数据进行判断
     if (item.depend) {
         if (!Global.Buffer.get(CacheKey)!.has(item.name)) {
             const replay = new ReplaySubject<any[]>(2);
@@ -163,6 +164,11 @@ export const WithTimeout =
     (source) =>
         withTimestamp ? source.pipe(timestamp()) : source;
 
+/**
+ * 不同阶段读取的 project 函数
+ * @param item
+ * @param stage
+ */
 const getProjectWithStage = (item: IConfigItem, stage: FilterNilStage) =>
     ({
         [FilterNilStage.InBefore]: identity,
@@ -180,6 +186,12 @@ const getProjectWithStage = (item: IConfigItem, stage: FilterNilStage) =>
         [FilterNilStage.Default]: identity
     }[stage] as (...args: any[]) => any);
 
+/**
+ * 不同阶段的错误信息
+ * @param name
+ * @param stage
+ * @constructor
+ */
 const ErrorMessage = (name: string, stage: FilterNilStage) =>
     ({
         [FilterNilStage.InBefore]: '',
@@ -199,10 +211,15 @@ export const handleTransformValue =
     (source) =>
         getProjectWithStage(item, stage)
             ? source.pipe(
+                  // 首先需要将传入的值转换成能够处理的类型 -- 主要考虑对初始值的转化
                   switchMap(transformResultToObservable),
+                  // project
                   map(getProjectWithStage(item, stage)),
+                  // 捕获错误
                   handleError(ErrorMessage(item.name, stage)),
+                  // 处理空值
                   handleUndefinedWithStage(item, config)(stage),
+                  // 最后将值转化成之后能处理的类型
                   switchMap(transformResultToObservable)
               )
             : source;
