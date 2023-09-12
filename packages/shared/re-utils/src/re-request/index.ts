@@ -11,6 +11,8 @@ import {
     switchMap,
     tap,
     throttleTime,
+    combineLatestWith,
+    map,
     startWith,
     delay
 } from 'rxjs';
@@ -36,7 +38,7 @@ const DefaultReRequestConfig: ReRequestConfig = {
     time: {
         debounce: 0,
         throttle: 0,
-        delay: 0
+        delay: 4000
     },
     retry: {
         count: 2,
@@ -53,12 +55,12 @@ export const ReRequest = (
     ReConfig: ReRequestConfig = {} as ReRequestConfig
 ) => {
     const reConfig = mergeDeepRight(DefaultReRequestConfig, ReConfig);
-    const loading = new BehaviorSubject(false);
+    const loading$ = new BehaviorSubject(false);
 
-    return of(AxiosConfig).pipe(
-        startWith(reConfig.value.init),
-        // distinctUntilChanged((pre, cur) => equals(pre, cur)),
-        tap(() => loading.next(true)),
+    const request$ = of(AxiosConfig).pipe(
+        // TODO 这个方法好像没有生效？
+        distinctUntilChanged((pre, cur) => equals(pre, cur)),
+        tap(() => loading$.next(true)),
         throttleTime(reConfig.time.throttle),
         debounceTime(reConfig.time.debounce),
         delay(reConfig.time.delay),
@@ -69,9 +71,18 @@ export const ReRequest = (
             resetOnSuccess: true
         }),
         catchError((e) => {
-            console.log('error', e);
+            console.error('re-request: ', e);
             return of(reConfig.value.default);
         }),
-        finalize(() => loading.next(false))
+        finalize(() => loading$.next(false)),
+        startWith(reConfig.value.init)
+    );
+
+    return request$.pipe(
+        combineLatestWith(loading$),
+        map(([data, loading]) => ({
+            data,
+            loading
+        }))
     );
 };

@@ -37,7 +37,9 @@ const items: DescriptionsProps['items'] = [
 export const InfoPanel = () => {
     const delayResult = useDelay(1000);
     const { info } = useReGen(InfoCacheKey, InfoConfig);
+
     console.log(info);
+
     return (
         <Card>
             <Row align="middle">
@@ -46,7 +48,12 @@ export const InfoPanel = () => {
                         <Col span={6} offset={2}>
                             <Avatar
                                 size={100}
-                                src="https://xsgames.co/randomusers/avatar.php?g=pixel&key=3"
+                                src={
+                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                                    // @ts-ignore
+                                    info?.data?.avatar_url ||
+                                    'https://xsgames.co/randomusers/avatar.php?g=pixel&key=3'
+                                }
                             />
                         </Col>
                         <Col span={16}>

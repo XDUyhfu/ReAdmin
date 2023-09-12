@@ -10,6 +10,7 @@ export const SettingPanel = () => {
         update,
         ReGenValue: { setValue }
     } = useReGen(SettingCacheKey, SettingConfig);
+
     return (
         <Card>
             {JSON.stringify(update)}
