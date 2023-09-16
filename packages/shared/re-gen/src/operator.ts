@@ -20,6 +20,7 @@ import { compose, equals, is, isNil, not } from 'ramda';
 import { FilterNilStage } from './config';
 import { CombineType } from './config';
 import {
+    getDependNames,
     transformFilterNilOptionToBoolean,
     transformResultToObservable
 } from './utils';
@@ -124,8 +125,7 @@ const handleCombineWithBuffer =
 
 export const handleDependValueChange = (
     CacheKey: string,
-    item: IConfigItem,
-    dependsName: string[]
+    item: IConfigItem
 ) => {
     // 使用额外的 ReplaySubject 存储数据进行判断
     if (item.depend) {
@@ -138,7 +138,7 @@ export const handleDependValueChange = (
     }
     return handleCombineWithBuffer(CacheKey, item.name, [
         item.name,
-        ...dependsName
+        ...getDependNames(item)
     ]);
 };
 

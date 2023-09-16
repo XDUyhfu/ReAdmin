@@ -80,8 +80,7 @@ const HandleDepend =
     (RelationConfig: IConfigItem[]) =>
         forEach((item: IConfigItem) => {
             const atom = Global.Store.get(CacheKey)!.get(item.name)!;
-            const dependNames = getDependNames(item);
-            const dependAtomsOut$ = dependNames.map(
+            const dependAtomsOut$ = getDependNames(item).map(
                 (name) => Global.Store.get(CacheKey)!.get(name)!.out$
             );
             const transformValue = handleTransformValue(item, config);
@@ -93,7 +92,7 @@ const HandleDepend =
                         item.depend?.combineType || CombineType.ANY_CHANGE,
                         dependAtomsOut$
                     ),
-                    handleDependValueChange(CacheKey, item, dependNames),
+                    handleDependValueChange(CacheKey, item),
                     transformValue(FilterNilStage.DependAfter),
                     scan(
                         item?.reduce?.handle || defaultReduceFunction,

@@ -41,6 +41,7 @@ export const RelationConfig: IConfigItem[] = [
                 _isChange,
                 _beforeAndCurrent
             ) {
+                console.log(aa, _isChange);
                 return aa?.[1] === 'CN';
             }
         }
