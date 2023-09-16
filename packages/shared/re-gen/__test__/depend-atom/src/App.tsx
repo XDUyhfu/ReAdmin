@@ -1,4 +1,4 @@
-import { useReGen } from '@yhfu/re-hooks';
+import { useReGen } from '../../../../re-hooks/src/index.ts';
 import { ParamsConfig, ParamsKey, RequestConfig, RequestKey } from './config';
 import { Button, Select } from 'antd';
 
@@ -6,13 +6,11 @@ function App() {
     const { result } = useReGen(RequestKey, RequestConfig);
     const {
         ReGenValue: { setValue: setParamsValue }
-    } = useReGen(ParamsKey, ParamsConfig);
-
-    // const { value } = useReGen(SecondCacheKey, SecondConfig);
+    } = useReGen(ParamsKey, ParamsConfig as any);
 
     return (
         <div>
-            {JSON.stringify(result)}
+            {JSON.stringify(result?.data?.login)}
             <br />
             <Select
                 style={{ width: 200 }}

@@ -77,3 +77,7 @@ type IResultRecordAtomsValue<
         };
     };
 };
+
+type ReGenHookConfig = {
+    destroyOnExit?: boolean;
+};

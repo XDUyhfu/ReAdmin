@@ -1,4 +1,9 @@
-import type { BehaviorSubject, Observable, ObservableInput } from 'rxjs';
+import type {
+    BehaviorSubject,
+    Observable,
+    ObservableInput,
+    ReplaySubject
+} from 'rxjs';
 import type { FilterNilStage, CombineType } from './config';
 
 export type PlainResult =
@@ -91,8 +96,7 @@ export interface ReGenConfig {
 }
 
 export type IAtomInOut = (name: string) => {
-    [p: `${string}In$`]: BehaviorSubject<any>;
-    [p: `${string}Out$`]: BehaviorSubject<any>;
+    [p: `${string}Out$`]: ReplaySubject<any>;
 };
 
 /**

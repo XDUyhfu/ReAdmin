@@ -201,7 +201,7 @@ export const JointState = (CacheKey: string, name: string) =>
  * 正确的格式是: prefix:CacheKey:name
  * @param joint
  */
-export const isJointAtom = (joint: any) => {
+export const isJointState = (joint: any) => {
     if (is(String, joint)) {
         if (joint.startsWith(`${DefaultValue.Prefix}:`)) {
             const rest = joint
@@ -284,8 +284,8 @@ export const isInit = (CacheKey: string) => !Global.Store.has(CacheKey);
  * @param CacheKey
  * @param item
  */
-export const generateAndStoreAtom = (CacheKey: string, item: IConfigItem) => {
-    const joint = isJointAtom(item.init);
+export const generateAndSaveAtom = (CacheKey: string, item: IConfigItem) => {
+    const joint = isJointState(item.init);
     // 如果 observable 有值，说明其依赖已经生成
     let observable = joint ? getOutObservable(joint[0])[joint[1]] : null;
     // 该 atom 需要链接到其他状态，但是那个 atom 还没有生成的时候，先产生一个中间bridge的 subject
@@ -298,7 +298,7 @@ export const generateAndStoreAtom = (CacheKey: string, item: IConfigItem) => {
         ]);
     }
     const initValue = typeof item.init === 'function' ? item.init() : item.init;
-    const atom = new AtomState(joint ? observable : initValue, !!item.depend);
+    const atom = new AtomState(joint ? observable : initValue, CacheKey, item);
     // 存储为全局变量
     Global.Store.get(CacheKey)!.set(item.name, atom);
 };

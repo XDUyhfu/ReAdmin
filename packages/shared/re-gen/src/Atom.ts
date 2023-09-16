@@ -2,7 +2,7 @@ import { BehaviorSubject, ReplaySubject } from 'rxjs';
 import type { AtomsType, IConfigItem } from './type';
 import { Global } from './store';
 import { isNil } from 'ramda';
-import { isValidRelationConfig } from './utils';
+import { JointState } from './utils';
 
 export class AtomState {
     in$: BehaviorSubject<any>;
@@ -12,7 +12,7 @@ export class AtomState {
     replay$: ReplaySubject<any[]> | null = null;
     destroy$: ReplaySubject<any>;
 
-    constructor(init: any, hasDepend = false) {
+    constructor(init: any, CacheKey: string, item: IConfigItem) {
         this.in$ = new BehaviorSubject(init);
         this.mid$ = new ReplaySubject(0);
         this.out$ = new BehaviorSubject(null);
@@ -20,11 +20,25 @@ export class AtomState {
         // 销毁时使用的
         this.destroy$ = new ReplaySubject(0);
 
+        const JointName = JointState(CacheKey, item.name);
+        if (Global.OutBridge.has(JointName)) {
+            this.out$.subscribe(Global.OutBridge.get(JointName)!);
+        }
+
         // 如果有依赖的话，记录变化前后的数据
-        if (hasDepend) {
+        if (item.depend) {
             this.replay$ = new ReplaySubject<any[]>(2);
             this.replay$.next([]);
         }
+    }
+
+    destroy() {
+        this.destroy$?.next({});
+        this.in$.complete();
+        this.mid$.complete();
+        this.out$.complete();
+        this.replay$?.complete();
+        this.destroy$.complete();
     }
 }
 
@@ -32,25 +46,19 @@ export class AtomState {
  * 通过判断 RelationConfig 是否有效，返回不同的处理函数
  * 主要是考虑到配置文件异步加载的情况，可能会导致后续的操作报错的问题
  * @param CacheKey
- * @param RelationConfig
  * @constructor
  */
-export const AtomInOut = (CacheKey: string, RelationConfig: IConfigItem[]) =>
-    isValidRelationConfig(RelationConfig)
-        ? <T = any>(name: string) => {
-              const atom = Global.Store.get(CacheKey)!.get(name)!;
-              if (!atom) {
-                  throw new Error(`用于构建的配置列表中不包含该 ${name} 值`);
-              }
-              return {
-                  [`${name}In$`]: atom.in$,
-                  [`${name}Out$`]: atom.out$
-              } as {
-                  [x: `${string}In$`]: BehaviorSubject<T>;
-                  [x: `${string}Out$`]: BehaviorSubject<T>;
-              };
-          }
-        : () => ({});
+export const AtomInOut = (CacheKey: string) => (name: string) => {
+    const JointName = JointState(CacheKey, name);
+    if (!Global.OutBridge.has(JointName)) {
+        Global.OutBridge.set(JointName, new ReplaySubject(0));
+    }
+    return {
+        [`${name}Out$`]: Global.OutBridge.get(JointName)!
+    } as {
+        [x: `${string}Out$`]: ReplaySubject<any>;
+    };
+};
 
 const GetCurrentAtomValues = (cacheKey: string): Record<string, any> => {
     const observables = GetAtomOutObservables(cacheKey);
@@ -150,4 +158,16 @@ export function setValue(CacheKey: string, name: string, value?: any) {
     return (value: any) => {
         SetAtomValueByName(CacheKey)(name, value);
     };
+}
+
+function destroyAtom(CacheKey: string, name: string) {
+    Global.Store.get(CacheKey)?.get(name)?.destroy();
+    Global.Store.get(CacheKey)?.delete(name);
+}
+
+export function destroyStore(CacheKey: string) {
+    Global.Store.get(CacheKey)?.forEach((_, name) => {
+        destroyAtom(CacheKey, name);
+    });
+    Global.Store.delete(CacheKey);
 }

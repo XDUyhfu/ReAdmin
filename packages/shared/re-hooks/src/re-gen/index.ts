@@ -3,7 +3,7 @@ import {
     PluckName,
     CheckParams,
     isPlainResult,
-    isJointAtom,
+    isJointState,
     generateNameInHook,
     flatRelationConfig,
     ReGen,
@@ -11,18 +11,21 @@ import {
     getInObservable,
     getValue,
     setValue,
-    DefaultValue
-} from '@yhfu/re-gen';
+    DefaultValue,
+    destroyStore
+} from '../../../re-gen/src';
 import type {
     IConfigItem,
     IConfigItemInit,
     IRelationConfig,
     ReGenConfig
-} from '@yhfu/re-gen';
+} from '../../../re-gen/src';
 import type {
     IResultAtomsValue,
     IResultRecordAtomsValue
 } from '@re-hooks/re-gen/type';
+import type { ReGenHookConfig } from '@re-hooks/re-gen/type';
+import { useEffect } from 'react';
 
 const getRecordValue = (CacheKey: string, RecordKey: string) => ({
     ReGenValue: {
@@ -56,20 +59,27 @@ export function useReGen<
 >(
     CacheKey: string,
     RelationConfig: ConfigList,
-    config?: ReGenConfig
+    config?: ReGenConfig & ReGenHookConfig
 ): IResultAtomsValue<ConfigList>;
 export function useReGen<
     RecordConfigItem extends Record<string, IConfigItem[] | IConfigItem[][]>
 >(
     CacheKey: string,
     RelationConfig: RecordConfigItem,
-    config?: ReGenConfig
+    config?: ReGenConfig & ReGenHookConfig
 ): IResultRecordAtomsValue<RecordConfigItem>;
 export function useReGen(
     CacheKey: string,
     RelationConfig: IRelationConfig,
-    config?: ReGenConfig
+    config?: ReGenConfig & ReGenHookConfig
 ): any {
+    useEffect(() => {
+        return () => {
+            if (config?.destroyOnExit ?? true) {
+                destroyStore(CacheKey);
+            }
+        };
+    }, []);
     const flatConfig = flatRelationConfig(RelationConfig);
     CheckParams(CacheKey, flatConfig, 'hook');
     const AtomInOut = ReGen(CacheKey, flatConfig, config);
@@ -91,7 +101,7 @@ export function useReGen(
                 () => inout?.[`${name}Out$`],
                 isPlainResult(initMap[name])
                     ? // TODO 数据过滤
-                      isJointAtom(initMap[name])
+                      isJointState(initMap[name])
                         ? null
                         : initMap[name]
                     : null

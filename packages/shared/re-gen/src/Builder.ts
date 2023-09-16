@@ -1,17 +1,26 @@
-import { filter, map, of, scan, tap } from 'rxjs';
+import {
+    asyncScheduler,
+    filter,
+    map,
+    of,
+    scan,
+    subscribeOn,
+    takeUntil,
+    tap
+} from 'rxjs';
 import { AtomInOut, getOutObservable } from './Atom';
 import {
     CheckParams,
     defaultReduceFunction,
     flatRelationConfig,
     getDependNames,
-    generateAndStoreAtom,
+    generateAndSaveAtom,
     isInit,
-    isJointAtom,
     isValidRelationConfig,
     OpenLogger,
     transformDistinctOptionToBoolean,
-    subscribeDependAtom
+    subscribeDependAtom,
+    isJointState
 } from './utils';
 import type {
     IAtomInOut,
@@ -42,7 +51,7 @@ const ConfigToAtomStore =
     (CacheKey: string) => (RelationConfig: IConfigItem[]) =>
         // 里面用到的 forEach 来自 ramda，它会将传入的参数返回
         forEach((item: IConfigItem) => {
-            generateAndStoreAtom(CacheKey, item);
+            generateAndSaveAtom(CacheKey, item);
             // 如果是需要 depend atom 的话，需要进行订阅
             subscribeDependAtom(CacheKey, item);
         })(RelationConfig);
@@ -61,10 +70,11 @@ const AtomHandle =
             const transformValue = handleTransformValue(item, config);
             atom.in$
                 .pipe(
-                    filter((item) => !isJointAtom(item)),
+                    filter((item) => !isJointState(item)),
                     transformValue(FilterNilStage.InBefore),
                     transformValue(FilterNilStage.In),
-                    transformValue(FilterNilStage.HandleAfter)
+                    transformValue(FilterNilStage.HandleAfter),
+                    takeUntil(atom.destroy$)
                 )
                 .subscribe(atom.mid$);
         })(RelationConfig);
@@ -110,7 +120,8 @@ const HandleDepend =
                     handleError(
                         `捕获到 ${item.name} item.interceptor.after 中报错`
                     ),
-                    handleLogger(CacheKey, item.name, config?.logger)
+                    handleLogger(CacheKey, item.name, config?.logger),
+                    takeUntil(atom.destroy$)
                 )
                 .subscribe(atom.out$);
         })(RelationConfig);
@@ -140,19 +151,18 @@ const BuildRelation = (
     CacheKey: string,
     RelationConfig: IConfigItem[],
     config?: ReGenConfig
-) => {
-    isInit(CacheKey) &&
-        isValidRelationConfig(RelationConfig) &&
-        of(RelationConfig)
-            .pipe(
-                tap(() => InitGlobal(CacheKey)),
-                map(ConfigToAtomStore(CacheKey)),
-                map(AtomHandle(CacheKey, config)),
-                map(HandleDepend(CacheKey, config)),
-                map(HandleInitValue(CacheKey, config))
-            )
-            .subscribe();
-};
+) =>
+    isValidRelationConfig(RelationConfig) &&
+    of(RelationConfig)
+        .pipe(
+            subscribeOn(asyncScheduler),
+            tap(() => InitGlobal(CacheKey)),
+            map(ConfigToAtomStore(CacheKey)),
+            map(AtomHandle(CacheKey, config)),
+            map(HandleDepend(CacheKey, config)),
+            map(HandleInitValue(CacheKey, config))
+        )
+        .subscribe();
 
 export const ReGen = (
     CacheKey: string,
@@ -160,8 +170,10 @@ export const ReGen = (
     config?: ReGenConfig
 ): IAtomInOut => {
     const flatConfig = flatRelationConfig(RelationConfig);
-    CheckParams(CacheKey, flatConfig, 'library');
-    OpenLogger(CacheKey, config);
-    BuildRelation(CacheKey, flatConfig, config);
-    return AtomInOut(CacheKey, flatConfig);
+    if (isInit(CacheKey)) {
+        CheckParams(CacheKey, flatConfig, 'library');
+        OpenLogger(CacheKey, config);
+        BuildRelation(CacheKey, flatConfig, config);
+    }
+    return AtomInOut(CacheKey);
 };
