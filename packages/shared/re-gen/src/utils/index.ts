@@ -49,6 +49,12 @@ const isNotObservable = (value: any) =>
 
 export const getDependNames = (item: IConfigItem) =>
     item.depend?.names || ([] as string[]);
+
+export const getDependNamesWithSelf = (item: IConfigItem) => [
+    item.name,
+    ...getDependNames(item)
+];
+
 export const defaultReduceFunction = (_: any, val: any) => val;
 
 /**
@@ -292,7 +298,7 @@ export const generateAndStoreAtom = (CacheKey: string, item: IConfigItem) => {
         ]);
     }
     const initValue = typeof item.init === 'function' ? item.init() : item.init;
-    const atom = new AtomState(joint ? observable : initValue);
+    const atom = new AtomState(joint ? observable : initValue, !!item.depend);
     // 存储为全局变量
     Global.Store.get(CacheKey)!.set(item.name, atom);
 };

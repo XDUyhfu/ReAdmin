@@ -9,7 +9,6 @@ import {
     filter,
     identity,
     map,
-    ReplaySubject,
     switchMap,
     tap,
     timestamp,
@@ -20,7 +19,7 @@ import { compose, equals, is, isNil, not } from 'ramda';
 import { FilterNilStage } from './config';
 import { CombineType } from './config';
 import {
-    getDependNames,
+    getDependNamesWithSelf,
     transformFilterNilOptionToBoolean,
     transformResultToObservable
 } from './utils';
@@ -83,27 +82,18 @@ export const handleCombine =
                 : source.pipe(combineLatestWith(...depends))
             : source;
 
-const handleCombineWithBuffer =
-    (
-        CacheKey: string,
-        name: string,
-        dependNamesWithSelf: string[]
-    ): OperatorReturnType =>
-    (source) =>
-        Global.Buffer.get(CacheKey)!.has(name)
+export const handleDependValueChange =
+    (CacheKey: string, item: IConfigItem): OperatorReturnType =>
+    (source) => {
+        const atom = Global.Store.get(CacheKey)!.get(item.name)!;
+        return atom.replay$
             ? source.pipe(
                   // 将新的值传入buffer
-                  tap((combineValue) =>
-                      Global.Buffer.get(CacheKey)!.get(name)!.next(combineValue)
-                  ),
-                  zipWith(
-                      Global.Buffer.get(CacheKey)!
-                          .get(name)!
-                          .pipe(bufferCount(2, 1))
-                  ),
+                  tap((combineValue) => atom.replay$!.next(combineValue)),
+                  zipWith(atom.replay$!.pipe(bufferCount(2, 1))),
                   map(([current, beforeAndCurrent]) => {
                       const isChange: Record<string, boolean> = {};
-                      dependNamesWithSelf?.forEach((name, index) => {
+                      getDependNamesWithSelf(item).forEach((name, index) => {
                           isChange[name] = not(
                               beforeAndCurrent?.[0]?.[index]?.timestamp
                                   ? equals(
@@ -122,25 +112,7 @@ const handleCombineWithBuffer =
                   })
               )
             : source;
-
-export const handleDependValueChange = (
-    CacheKey: string,
-    item: IConfigItem
-) => {
-    // 使用额外的 ReplaySubject 存储数据进行判断
-    if (item.depend) {
-        if (!Global.Buffer.get(CacheKey)!.has(item.name)) {
-            const replay = new ReplaySubject<any[]>(2);
-            Global.Buffer.get(CacheKey)!.set(item.name, replay);
-            // 存储一个初始值 [] 作为初始值
-            replay.next([]);
-        }
-    }
-    return handleCombineWithBuffer(CacheKey, item.name, [
-        item.name,
-        ...getDependNames(item)
-    ]);
-};
+    };
 
 export const handleError =
     (message: string): OperatorReturnType =>

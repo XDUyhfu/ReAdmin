@@ -9,10 +9,22 @@ export class AtomState {
     mid$: ReplaySubject<any>;
     out$: BehaviorSubject<any>;
 
-    constructor(init: any) {
+    replay$: ReplaySubject<any[]> | null = null;
+    destroy$: ReplaySubject<any>;
+
+    constructor(init: any, hasDepend = false) {
         this.in$ = new BehaviorSubject(init);
         this.mid$ = new ReplaySubject(0);
         this.out$ = new BehaviorSubject(null);
+
+        // 销毁时使用的
+        this.destroy$ = new ReplaySubject(0);
+
+        // 如果有依赖的话，记录变化前后的数据
+        if (hasDepend) {
+            this.replay$ = new ReplaySubject<any[]>(2);
+            this.replay$.next([]);
+        }
     }
 }
 
