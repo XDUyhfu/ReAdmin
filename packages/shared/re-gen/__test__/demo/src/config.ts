@@ -181,16 +181,10 @@ export const Config: IConfigItem[] = [
     },
     {
         name: 'sub',
-        withTimestamp: true,
-        handle() {
-            return -1;
-        }
+        timestamp: true
     },
     {
         name: 'add',
-        withTimestamp: true,
-        handle() {
-            return 1;
-        }
+        timestamp: true
     }
 ];

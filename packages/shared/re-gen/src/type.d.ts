@@ -62,7 +62,7 @@ export interface IConfigItem<Name extends string = string> {
     /**
      * 结果是否携带 timestamp 信息，主要用于在两次流经值相同的情况下，用于判断该值是否发生了变化
      */
-    withTimestamp?: boolean;
+    timestamp?: boolean;
 }
 
 export type AtomsType = Record<string, BehaviorSubject<any>>;
@@ -87,7 +87,7 @@ export interface ReGenConfig {
     /**
      * 结果是否携带 timestamp 信息，主要用于在两次流经值相同的情况下，用于判断该值是否发生了变化
      */
-    withTimestamp?: boolean;
+    timestamp?: boolean;
 }
 
 export type IAtomInOut = (name: string) => {

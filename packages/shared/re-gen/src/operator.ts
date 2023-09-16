@@ -131,7 +131,7 @@ export const handleLogger = (
 ): OperatorReturnType =>
     open ? Global.LoggerWatcher.get(CacheKey)!(`${name}`) : identity;
 
-export const WithTimeout =
+export const WithTimestamp =
     (withTimestamp?: boolean): OperatorReturnType =>
     (source) =>
         withTimestamp ? source.pipe(timestamp()) : source;

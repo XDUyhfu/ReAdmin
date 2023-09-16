@@ -29,7 +29,7 @@ import {
     handleError,
     handleLogger,
     handleTransformValue,
-    WithTimeout
+    WithTimestamp
 } from './operator';
 import { Global, InitGlobal } from './store';
 
@@ -100,7 +100,7 @@ const HandleDepend =
                     ),
                     transformValue(FilterNilStage.Out),
                     transformValue(FilterNilStage.OutAfter),
-                    WithTimeout(item.withTimestamp ?? config?.withTimestamp),
+                    WithTimestamp(item.timestamp ?? config?.timestamp),
                     handleDistinct(
                         transformDistinctOptionToBoolean(
                             config?.distinct,
