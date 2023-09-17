@@ -3,10 +3,17 @@ import { ParamsConfig, ParamsKey, RequestConfig, RequestKey } from './config';
 import { Button, Select } from 'antd';
 
 function App() {
-    const { result } = useReGen(RequestKey, RequestConfig, { logger: true });
+    const { result } = useReGen(RequestKey, RequestConfig, {
+        logger: true,
+        destroyOnExit: false
+    });
     const {
+        param1,
         ReGenValue: { setValue: setParamsValue }
-    } = useReGen(ParamsKey, ParamsConfig as any, { logger: true });
+    } = useReGen(ParamsKey, ParamsConfig as any, {
+        logger: true,
+        destroyOnExit: false
+    });
 
     return (
         <div>
@@ -14,6 +21,7 @@ function App() {
             <br />
             <Select
                 style={{ width: 200 }}
+                value={param1}
                 onChange={setParamsValue('param1')}
                 options={[
                     { label: 'XDUyhfu', value: 'XDUyhfu' },
