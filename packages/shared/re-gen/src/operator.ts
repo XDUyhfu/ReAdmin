@@ -20,6 +20,7 @@ import { FilterNilStage } from './config';
 import { CombineType } from './config';
 import {
     getDependNamesWithSelf,
+    JointState,
     transformFilterNilOptionToBoolean,
     transformResultToObservable
 } from './utils';
@@ -128,8 +129,13 @@ export const handleLogger = (
     CacheKey: string,
     name: string,
     open?: { duration?: number } | boolean | number
-): OperatorReturnType =>
-    open ? Global.LoggerWatcher.get(CacheKey)!(`${name}`) : identity;
+): OperatorReturnType => {
+    if (!Global.LoggerWatcherCache.has(JointState(CacheKey, name)) && open) {
+        Global.LoggerWatcherCache.set(JointState(CacheKey, name), true);
+        return Global.LoggerWatcher.get(CacheKey)!(`${name}`);
+    }
+    return identity;
+};
 
 export const WithTimestamp =
     (withTimestamp?: boolean): OperatorReturnType =>

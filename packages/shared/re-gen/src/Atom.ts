@@ -168,7 +168,8 @@ function destroyAtom(CacheKey: string, name: string) {
 export function destroyStore(CacheKey: string) {
     Global.Store.get(CacheKey)?.forEach((_, name) => {
         destroyAtom(CacheKey, name);
+        Global.LoggerWatcherCache.delete(JointState(CacheKey, name));
     });
     Global.Store.delete(CacheKey);
-    // Global.LoggerWatcher.delete(CacheKey);
+    Global.LoggerWatcher.delete(CacheKey);
 }

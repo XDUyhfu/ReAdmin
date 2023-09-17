@@ -12,7 +12,8 @@ export const Global = {
             marbleName: string,
             selector?: ((value: T) => any) | undefined
         ) => OperatorFunction<T, T>
-    >()
+    >(),
+    LoggerWatcherCache: new Map<string, boolean>()
 };
 
 export const InitGlobal = (CacheKey: string) => {
