@@ -170,4 +170,5 @@ export function destroyStore(CacheKey: string) {
         destroyAtom(CacheKey, name);
     });
     Global.Store.delete(CacheKey);
+    // Global.LoggerWatcher.delete(CacheKey);
 }

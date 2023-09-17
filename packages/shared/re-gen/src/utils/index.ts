@@ -186,6 +186,7 @@ export const CheckParams = (
     RelationConfig: IConfigItem[],
     entry: 'hook' | 'library'
 ) => {
+    if (!isInit(CacheKey)) return;
     // 参数检查在 hook 中，配置项不能为空
     // 作为库使用时可以为空，如果为空将不会对 CacheKey 进行存储
     CheckReGenParams(CacheKey, RelationConfig, entry);

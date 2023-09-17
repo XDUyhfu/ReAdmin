@@ -15,12 +15,12 @@ import {
     flatRelationConfig,
     getDependNames,
     generateAndSaveAtom,
-    isInit,
     isValidRelationConfig,
     OpenLogger,
     transformDistinctOptionToBoolean,
     subscribeDependAtom,
-    isJointState
+    isJointState,
+    isInit
 } from './utils';
 import type {
     IAtomInOut,
@@ -152,10 +152,12 @@ const BuildRelation = (
     RelationConfig: IConfigItem[],
     config?: ReGenConfig
 ) =>
+    isInit(CacheKey) &&
     isValidRelationConfig(RelationConfig) &&
     of(RelationConfig)
         .pipe(
             subscribeOn(asyncScheduler),
+            tap(() => OpenLogger(CacheKey, config)),
             tap(() => InitGlobal(CacheKey)),
             map(ConfigToAtomStore(CacheKey)),
             map(AtomHandle(CacheKey, config)),
@@ -170,10 +172,7 @@ export const ReGen = (
     config?: ReGenConfig
 ): IAtomInOut => {
     const flatConfig = flatRelationConfig(RelationConfig);
-    if (isInit(CacheKey)) {
-        CheckParams(CacheKey, flatConfig, 'library');
-        OpenLogger(CacheKey, config);
-        BuildRelation(CacheKey, flatConfig, config);
-    }
+    CheckParams(CacheKey, flatConfig, 'library');
+    BuildRelation(CacheKey, flatConfig, config);
     return AtomInOut(CacheKey);
 };

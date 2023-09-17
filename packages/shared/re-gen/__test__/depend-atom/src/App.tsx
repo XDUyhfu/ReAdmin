@@ -3,10 +3,10 @@ import { ParamsConfig, ParamsKey, RequestConfig, RequestKey } from './config';
 import { Button, Select } from 'antd';
 
 function App() {
-    const { result } = useReGen(RequestKey, RequestConfig);
+    const { result } = useReGen(RequestKey, RequestConfig, { logger: true });
     const {
         ReGenValue: { setValue: setParamsValue }
-    } = useReGen(ParamsKey, ParamsConfig as any);
+    } = useReGen(ParamsKey, ParamsConfig as any, { logger: true });
 
     return (
         <div>
