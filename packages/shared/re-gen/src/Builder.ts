@@ -20,7 +20,8 @@ import {
     transformDistinctOptionToBoolean,
     subscribeDependAtom,
     isJointState,
-    isInit
+    isInit,
+    JointState
 } from './utils';
 import type {
     IAtomInOut,
@@ -38,7 +39,8 @@ import {
     handleError,
     handleLogger,
     handleTransformValue,
-    WithTimestamp
+    WithTimestamp,
+    handlePersist
 } from './operator';
 import { Global, InitGlobal } from './store';
 
@@ -121,6 +123,7 @@ const HandleDepend =
                         `捕获到 ${item.name} item.interceptor.after 中报错`
                     ),
                     handleLogger(CacheKey, item.name, config?.logger),
+                    handlePersist(CacheKey, item.name, config?.persist),
                     takeUntil(atom.destroy$)
                 )
                 .subscribe(atom.out$);
@@ -133,12 +136,25 @@ const HandleInitValue =
             if (!config?.init) {
                 return;
             }
-            const initValue = config.init?.[item.name];
+
+            const initValue = config?.init?.[item.name];
             if (initValue) {
                 const outObservable = getOutObservable(CacheKey, item.name);
-                outObservable?.next(initValue);
+                // TODO 排查异步原因
+                setTimeout(() => outObservable?.next(initValue));
             }
         })(RelationConfig);
+
+const getPersistValue = (CacheKey: string, RelationConfig: IConfigItem[]) => {
+    if (!isInit(CacheKey)) return;
+    const init = {} as Record<string, any>;
+    forEach((item: IConfigItem) => {
+        init[item.name] = JSON.parse(
+            sessionStorage.getItem(JointState(CacheKey, item.name))!
+        );
+    })(RelationConfig);
+    Global.InitValue.set(CacheKey, init);
+};
 
 /**
  * 构建的整体流程
@@ -156,6 +172,7 @@ const BuildRelation = (
     isValidRelationConfig(RelationConfig) &&
     of(RelationConfig)
         .pipe(
+            // TODO 异步和同步需要做区分
             subscribeOn(asyncScheduler),
             tap(() => OpenLogger(CacheKey, config)),
             tap(() => InitGlobal(CacheKey)),
@@ -172,7 +189,11 @@ export const ReGen = (
     config?: ReGenConfig
 ): IAtomInOut => {
     const flatConfig = flatRelationConfig(RelationConfig);
+    getPersistValue(CacheKey, flatConfig);
     CheckParams(CacheKey, flatConfig, 'library');
-    BuildRelation(CacheKey, flatConfig, config);
+    BuildRelation(CacheKey, flatConfig, {
+        ...config,
+        init: Global.InitValue.get(CacheKey)
+    });
     return AtomInOut(CacheKey);
 };

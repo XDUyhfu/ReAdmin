@@ -6,6 +6,7 @@ export const Global = {
     Store: new Map<string, Map<string, AtomState>>(),
     AtomBridge: new Map<string, BehaviorSubject<any>[]>(),
     OutBridge: new Map<string, ReplaySubject<any>>(),
+    InitValue: new Map<string, Record<string, any>>(),
     LoggerWatcher: new Map<
         string,
         <T>(

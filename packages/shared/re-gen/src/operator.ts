@@ -1,4 +1,4 @@
-import type { IConfigItem, IDistinct, ReGenConfig } from './type';
+import type { IConfigItem, IDistinct, PersistType, ReGenConfig } from './type';
 import type { BehaviorSubject, Observable } from 'rxjs';
 import {
     bufferCount,
@@ -199,5 +199,25 @@ export const handleTransformValue =
                   handleUndefinedWithStage(item, config)(stage),
                   // 最后将值转化成之后能处理的类型
                   switchMap(transformResultToObservable)
+              )
+            : source;
+
+export const handlePersist =
+    (
+        CacheKey: string,
+        name: string,
+        persist?: PersistType
+    ): OperatorReturnType =>
+    (source) =>
+        persist
+            ? source.pipe(
+                  tap((value) => {
+                      if (value) {
+                          sessionStorage.setItem(
+                              JointState(CacheKey, name),
+                              JSON.stringify(value)
+                          );
+                      }
+                  })
               )
             : source;

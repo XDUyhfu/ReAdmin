@@ -77,6 +77,11 @@ export type PluckValueType = {
     init: IConfigItemInit;
 };
 
+export type PersistType = {
+    name: string;
+    storage: 'localStorage' | 'sessionStorage';
+};
+
 export interface ReGenConfig {
     /**
      * 是否开启logger
@@ -93,6 +98,7 @@ export interface ReGenConfig {
      * 结果是否携带 timestamp 信息，主要用于在两次流经值相同的情况下，用于判断该值是否发生了变化
      */
     timestamp?: boolean;
+    persist?: PersistType;
 }
 
 export type IAtomInOut = (name: string) => {

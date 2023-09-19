@@ -5,14 +5,22 @@ import { Button, Select } from 'antd';
 function App() {
     const { result } = useReGen(RequestKey, RequestConfig, {
         logger: true,
-        destroyOnExit: false
+        persist: {
+            name: 'persist-name',
+            storage: 'localStorage'
+        }
+        // destroyOnExit: false
     });
     const {
         param1,
         ReGenValue: { setValue: setParamsValue }
     } = useReGen(ParamsKey, ParamsConfig as any, {
         logger: true,
-        destroyOnExit: false
+        persist: {
+            name: 'persist-name',
+            storage: 'localStorage'
+        }
+        // destroyOnExit: false
     });
 
     return (
