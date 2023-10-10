@@ -8,7 +8,7 @@ import {
     takeUntil,
     tap
 } from 'rxjs';
-import { AtomInOut, getOutObservable } from './Atom';
+import { AtomInOut } from './Atom';
 import {
     CheckParams,
     defaultReduceFunction,
@@ -20,8 +20,7 @@ import {
     transformDistinctOptionToBoolean,
     subscribeDependAtom,
     isJointState,
-    isInit,
-    JointState
+    isInit
 } from './utils';
 import type {
     IAtomInOut,
@@ -129,33 +128,6 @@ const HandleDepend =
                 .subscribe(atom.out$);
         })(RelationConfig);
 
-const HandleInitValue =
-    (CacheKey: string, config?: ReGenConfig) =>
-    (RelationConfig: IConfigItem[]) =>
-        forEach((item: IConfigItem) => {
-            if (!config?.init) {
-                return;
-            }
-
-            const initValue = config?.init?.[item.name];
-            if (initValue) {
-                const outObservable = getOutObservable(CacheKey, item.name);
-                // TODO 排查异步原因
-                setTimeout(() => outObservable?.next(initValue));
-            }
-        })(RelationConfig);
-
-const getPersistValue = (CacheKey: string, RelationConfig: IConfigItem[]) => {
-    if (!isInit(CacheKey)) return;
-    const init = {} as Record<string, any>;
-    forEach((item: IConfigItem) => {
-        init[item.name] = JSON.parse(
-            sessionStorage.getItem(JointState(CacheKey, item.name))!
-        );
-    })(RelationConfig);
-    Global.InitValue.set(CacheKey, init);
-};
-
 /**
  * 构建的整体流程
  * @param CacheKey
@@ -178,8 +150,7 @@ const BuildRelation = (
             tap(() => InitGlobal(CacheKey)),
             map(ConfigToAtomStore(CacheKey)),
             map(AtomHandle(CacheKey, config)),
-            map(HandleDepend(CacheKey, config)),
-            map(HandleInitValue(CacheKey, config))
+            map(HandleDepend(CacheKey, config))
         )
         .subscribe();
 
@@ -189,7 +160,6 @@ export const ReGen = (
     config?: ReGenConfig
 ): IAtomInOut => {
     const flatConfig = flatRelationConfig(RelationConfig);
-    getPersistValue(CacheKey, flatConfig);
     CheckParams(CacheKey, flatConfig, 'library');
     BuildRelation(CacheKey, flatConfig, {
         ...config,

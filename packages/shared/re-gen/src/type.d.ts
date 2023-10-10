@@ -70,7 +70,7 @@ export interface IConfigItem<Name extends string = string> {
     timestamp?: boolean;
 }
 
-export type AtomsType = Record<string, BehaviorSubject<any>>;
+export type AtomsType = Record<string, ReplaySubject<any>>;
 
 export type PluckValueType = {
     name: string;

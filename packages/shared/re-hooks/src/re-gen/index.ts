@@ -2,8 +2,8 @@ import { useObservable } from 'rxjs-hooks';
 import {
     PluckName,
     CheckParams,
-    isPlainResult,
-    isJointState,
+    // isPlainResult,
+    // isJointState,
     generateNameInHook,
     flatRelationConfig,
     ReGen,
@@ -16,7 +16,7 @@ import {
 } from '../../../re-gen/src';
 import type {
     IConfigItem,
-    IConfigItemInit,
+    // IConfigItemInit,
     IRelationConfig,
     ReGenConfig
 } from '../../../re-gen/src';
@@ -84,13 +84,13 @@ export function useReGen(
     CheckParams(CacheKey, flatConfig, 'hook');
     const AtomInOut = ReGen(CacheKey, flatConfig, config);
     const names = PluckName(flatConfig);
-    const initMap = flatConfig.reduce(
-        (pre, item) => ({
-            ...pre,
-            [`${item.name}`]: item.init
-        }),
-        {} as Record<string, IConfigItemInit>
-    );
+    // const initMap = flatConfig.reduce(
+    //     (pre, item) => ({
+    //         ...pre,
+    //         [`${item.name}`]: item.init
+    //     }),
+    //     {} as Record<string, IConfigItemInit>
+    // );
 
     const AtomsValue: IResultAtomsValue = names.reduce((pre, name) => {
         const inout = AtomInOut?.(name);
@@ -98,13 +98,13 @@ export function useReGen(
         return {
             ...pre,
             [`${name}`]: useObservable(
-                () => inout?.[`${name}Out$`],
-                isPlainResult(initMap[name])
-                    ? // TODO 数据过滤
-                      isJointState(initMap[name])
-                        ? null
-                        : initMap[name]
-                    : null
+                () => inout?.[`${name}Out$`]
+                // isPlainResult(initMap[name])
+                //     ? // TODO 数据过滤
+                //       isJointState(initMap[name])
+                //         ? null
+                //         : initMap[name]
+                //     : null
             )
         };
     }, {} as IResultAtomsValue);

@@ -33,7 +33,7 @@ export const RequestConfig = [
         handle(val: any) {
             if (val) {
                 return axios.get(
-                    `https://api.github.com/users/${val?.param1 ?? 'XDUyhfu'}`
+                    'http://127.0.0.1:4523/m1/2692195-0-default/json'
                 );
             }
         }

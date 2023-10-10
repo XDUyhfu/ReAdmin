@@ -25,7 +25,7 @@ function App() {
 
     return (
         <div>
-            {JSON.stringify(result?.data?.login)}
+            {JSON.stringify(result?.data?.result?.login)}
             <br />
             <Select
                 style={{ width: 200 }}

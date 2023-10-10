@@ -5,7 +5,7 @@ import { isNil } from 'ramda';
 import { JointState } from './utils';
 
 export class AtomState {
-    in$: BehaviorSubject<any>;
+    in$: ReplaySubject<any>;
     mid$: ReplaySubject<any>;
     out$: BehaviorSubject<any>;
 
@@ -13,9 +13,18 @@ export class AtomState {
     destroy$: ReplaySubject<any>;
 
     constructor(init: any, CacheKey: string, item: IConfigItem) {
-        this.in$ = new BehaviorSubject(init);
+        this.in$ = new ReplaySubject(0);
         this.mid$ = new ReplaySubject(0);
-        this.out$ = new BehaviorSubject(null);
+
+        const initValue =
+            JSON.parse(
+                sessionStorage.getItem(JointState(CacheKey, item.name))!
+            ) ?? null;
+        this.out$ = new BehaviorSubject(initValue);
+
+        if (!initValue) {
+            this.in$.next(init);
+        }
 
         // 销毁时使用的
         this.destroy$ = new ReplaySubject(0);
@@ -75,7 +84,7 @@ const GetCurrentAtomValueByName = (CacheKey: string, name: string) =>
 const GetAtomOutObservables = (
     CacheKey: string
 ): Record<string, BehaviorSubject<any>> => {
-    const result = {} as AtomsType;
+    const result = {} as Record<string, BehaviorSubject<any>>;
     if (Global.Store.has(CacheKey)) {
         const entries = Global.Store.get(CacheKey)!.entries();
         for (const [key, value] of entries) {
@@ -90,9 +99,7 @@ const GetAtomOutObservableByName = (
     name: string
 ): BehaviorSubject<any> => GetAtomOutObservables(CacheKey)[name];
 
-const GetAtomInObservables = (
-    CacheKey: string
-): Record<string, BehaviorSubject<any>> => {
+const GetAtomInObservables = (CacheKey: string): AtomsType => {
     const result = {} as AtomsType;
     if (Global.Store.has(CacheKey)) {
         const entries = Global.Store.get(CacheKey)!.entries();
@@ -106,7 +113,7 @@ const GetAtomInObservables = (
 const GetAtomInObservableByName = (
     CacheKey: string,
     name: string
-): BehaviorSubject<any> => GetAtomInObservables(CacheKey)[name];
+): ReplaySubject<any> => GetAtomInObservables(CacheKey)[name];
 
 const SetAtomValueByName = (CacheKey: string) => (name: string, value: any) =>
     GetAtomInObservables(CacheKey)?.[name]?.next(value);
@@ -136,11 +143,11 @@ export function getOutObservable(CacheKey: string, name?: string) {
 
 export function getInObservable(
     CacheKey: string
-): Record<string, BehaviorSubject<any>>;
+): Record<string, ReplaySubject<any>>;
 export function getInObservable(
     CacheKey: string,
     name?: string
-): BehaviorSubject<any>;
+): ReplaySubject<any>;
 export function getInObservable(CacheKey: string, name?: string) {
     if (name) {
         return GetAtomInObservableByName(CacheKey, name);
